@@ -8,6 +8,11 @@ from pathlib import Path
 import shlex
 import json
 
+import sys, os
+file_dir = dirname(__file__)
+sys.path.insert(0, os.path.join(file_dir, '../autoload/python'))
+from gen_clang_conf import *
+
 logger = getLogger(__name__)
 
 
@@ -73,22 +78,10 @@ def args_from_cmake(filepath, cwd, database_paths):
 
 
 def args_from_clang_complete(filepath, cwd):
-    filedir = dirname(filepath)
+    clang, work_dir = GenClangConf().get_clang_conf()
 
-    clang_complete = find_config([filedir, cwd], '.clang_complete')
-
-    if not clang_complete:
-        return None, None
-
-    try:
-        with open(clang_complete, "r") as f:
-            args = shlex.split(" ".join(f.readlines()))
-            args = [expanduser(expandvars(p)) for p in args]
-            logger.info('.clang_complete args: %s', args)
-            return args, dirname(clang_complete)
-    except Exception as ex:
-        logger.exception("read config file %s failed.", clang_complete)
-
+    if clang:
+        return clang, work_dir
     return None, None
 
 
