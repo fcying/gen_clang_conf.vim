@@ -1,0 +1,1 @@
+nnoremap <leader>py :py3f autoload/python/gen_clang_conf.py<CR>

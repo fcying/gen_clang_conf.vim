@@ -12,6 +12,10 @@ from itertools import chain
 from deoplete.util import getlines, error
 from .base import Base
 
+import sys
+file_dir = dirname(__file__)
+sys.path.insert(0, os.path.join(file_dir, '../../../../autoload/python'))
+from gen_clang_conf import *
 
 class Source(Base):
     run_dir = ''
@@ -21,7 +25,7 @@ class Source(Base):
 
         self.name = 'clangx'
         self.filetypes = ['c', 'cpp']
-        self.mark = '[clangx]'
+        self.mark = '[clang]'
         self.rank = 500
         self.executable_clang = self.vim.call('executable', 'clang')
         self.encoding = self.vim.eval('&encoding')
@@ -37,9 +41,7 @@ class Source(Base):
     def on_event(self, context):
         self._args = self._args_from_neoinclude(context)
 
-        Source.run_dir = context['cwd']
-        clang = self._args_from_clang(context, '.clang')
-        clang += self._args_from_clang(context, '.clang_complete')
+        clang, Source.run_dir = GenClangConf().get_clang_conf()
         if clang:
             self._args += clang
         else:
@@ -98,23 +100,6 @@ class Source(Base):
                            context['bufnr'],
                            context['filetype']).replace(';', ',').split(',')
              if x != '']))
-
-    def _args_from_clang(self, context, name):
-        clang_file = self.vim.call('findfile', name, '.;')
-        if not clang_file:
-            return []
-
-        clang_file = self.vim.call('fnamemodify', clang_file, ':p')
-
-        try:
-            with open(clang_file) as f:
-                args = shlex.split(' '.join(f.readlines()))
-                args = [expanduser(expandvars(p)) for p in args]
-                Source.run_dir = dirname(clang_file)
-                return args
-        except Exception as e:
-            error(self.vim, 'Parse Failed: ' + clang_file)
-        return []
 
     def _parse_lines(self, lines):
         candidates = []
