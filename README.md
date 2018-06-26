@@ -8,12 +8,18 @@ It is used for generate and maintain clang_config and provide a clang completion
 
 ## Installation
 * [vim-plug](https://github.com/junegunn/vim-plug)
+
     `Plug 'fcying/gen_clang_conf.vim'`
+
+## Options
+* `g:gen_clang_conf#ignore_dirs`
+
+    Specify the directories you want to exclude while `GenClangConf`, ignore case.
 
 ## Commands
 * `:GenClangConf`  
 
-    gen `.clang` in scm dir, it will join all folders with contain (`c`, `cpp`, `h`) file
+    Gen `.clang` in scm dir, it will join all folders with contain (`c`, `cpp`, `h`) file
     if not found scm dir, gen `.clang` in current dir.
 
 * `:EditClangExt`  
@@ -22,4 +28,4 @@ It is used for generate and maintain clang_config and provide a clang completion
 
 * `:ClearClangConf`  
 
-    remove `.clang` and `.clang_ext` in scm dir.
+    Remove `.clang` and `.clang_ext` in scm dir.

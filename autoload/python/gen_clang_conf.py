@@ -19,17 +19,16 @@ class GenClangConf():
         # print(GenClangConf.work_dir)
         return clang, GenClangConf.work_dir
 
-    def gen_clang_conf(self):
+    def gen_clang_conf(self, vim):
         scm_dir = self._find_scm_dir()
-
         clang_file = join(scm_dir, '.clang')
-        ignore_dirs = ['__pycache__', 'out', 'build', 'cache', 'doc', 'docs']
+        ignore_dirs = vim.eval('g:gen_clang_conf#ignore_dirs')
         ignore_dirs += GenClangConf.scm_dirs
         clang = []
         for root, dirs, files in os.walk(str(Path(scm_dir).parent)):
             for ignore_dir in ignore_dirs:
                 is_ignore_dir = 0
-                if root.endswith(ignore_dir):
+                if root.lower().endswith(ignore_dir):
                     dirs[:] = []
                     is_ignore_dir = 1
                     break

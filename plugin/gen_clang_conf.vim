@@ -3,6 +3,11 @@
 " Author: fcying
 " ============================================================================
 
+if !exists('g:gen_clang_conf#ignore_dirs')
+  let g:gen_clang_conf#ignore_dirs = ['__pycache__', 'out', 'lib', 'build', 
+        \ 'cache', 'doc', 'docs']
+endif
+
 py3 << EOF
 import vim, sys, os.path
 cwd = vim.eval('expand("<sfile>:p:h")')
@@ -12,7 +17,7 @@ EOF
 
 function! s:gen_clang_conf()
 py3 << EOF
-GenClangConf().gen_clang_conf()
+GenClangConf().gen_clang_conf(vim)
 EOF
 echo "GenClangConf success"
 endfunction
