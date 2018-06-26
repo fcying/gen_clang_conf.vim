@@ -21,11 +21,8 @@ class GenClangConf():
 
     def gen_clang_conf(self):
         scm_dir = self._find_scm_dir()
-        if not scm_dir:
-            print("not found scm dir, retrun")
-            return
 
-        clang_file = os.path.join(scm_dir, '.clang')
+        clang_file = join(scm_dir, '.clang')
         ignore_dirs = ['__pycache__', 'out', 'build', 'cache', 'doc', 'docs']
         ignore_dirs += GenClangConf.scm_dirs
         clang = []
@@ -59,8 +56,8 @@ class GenClangConf():
             print("not found scm dir, retrun")
             return
 
-        ext_file = os.path.join(scm_dir, '.clang_ext')
-        clang_file = os.path.join(scm_dir, '.clang')
+        ext_file = join(scm_dir, '.clang_ext')
+        clang_file = join(scm_dir, '.clang')
         try:
             os.remove(clang_file)
         except Exception as e:
@@ -76,7 +73,7 @@ class GenClangConf():
             print("not found scm dir, retrun")
             return ''
 
-        ext_file = os.path.join(scm_dir, '.clang_ext')
+        ext_file = join(scm_dir, '.clang_ext')
         return ext_file
 
     def _find_scm_dir(self):
@@ -84,7 +81,7 @@ class GenClangConf():
         dirs = [cwd.resolve()] + list(cwd.parents)
         for d in dirs:
             for name in GenClangConf.scm_dirs:
-                scm_dir = os.path.join(str(d), name)
+                scm_dir = join(str(d), name)
                 if isdir(scm_dir):
                     return scm_dir
         return ''
@@ -103,8 +100,8 @@ class GenClangConf():
         scm_dir = self._find_scm_dir()
 
         if scm_dir:
-            ext_file = os.path.join(scm_dir, '.clang_ext')
-            clang_file = os.path.join(scm_dir, '.clang')
+            ext_file = join(scm_dir, '.clang_ext')
+            clang_file = join(scm_dir, '.clang')
             clang = []
             if isfile(ext_file):
                 clang = self._read_conf(ext_file)
@@ -120,7 +117,7 @@ class GenClangConf():
         dirs = [cwd.resolve()] + list(cwd.parents)
         for d in dirs:
             for name in names:
-                clang_file = os.path.join(str(d), name)
+                clang_file = join(str(d), name)
                 if isfile(clang_file):
                     break
                 clang_file = ''
@@ -128,8 +125,14 @@ class GenClangConf():
                 break
 
         if clang_file:
+            clang = []
             GenClangConf.work_dir = dirname(clang_file)
-            return self._read_conf(clang_file)
+            # add clang_ext first
+            ext_file = join(GenClangConf.work_dir, '.clang_ext')
+            if isfile(ext_file):
+                clang += self._read_conf(ext_file)
+            clang += self._read_conf(clang_file)
+            return clang
 
         return []
 

@@ -14,6 +14,7 @@ It is used for generate and maintain clang_config and provide a clang completion
 * `:GenClangConf`  
 
     gen `.clang` in scm dir, it will join all folders with contain (`c`, `cpp`, `h`) file
+    if not found scm dir, gen `.clang` in current dir.
 
 * `:EditClangExt`  
 
