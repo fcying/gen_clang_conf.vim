@@ -12,14 +12,17 @@ py3 << EOF
 import vim, sys, os.path
 cwd = vim.eval('expand("<sfile>:p:h")')
 sys.path.insert(0, os.path.join(cwd, '../autoload/python'))
-from gen_clang_conf import *
+from gen_clang_conf import GenClangConf
 EOF
 
 function! s:gen_clang_conf()
 py3 << EOF
-GenClangConf().gen_clang_conf(vim)
+ret = GenClangConf().gen_clang_conf(vim)
+if ret == 1:
+  print("GenClangConf success")
+else:
+  print("GenClangConf failed")
 EOF
-echo "GenClangConf success"
 endfunction
 
 function! s:clear_clang_conf()

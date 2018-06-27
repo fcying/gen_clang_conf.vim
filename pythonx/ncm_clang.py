@@ -11,7 +11,7 @@ import json
 import sys, os
 file_dir = dirname(__file__)
 sys.path.insert(0, os.path.join(file_dir, '../autoload/python'))
-from gen_clang_conf import *
+from gen_clang_conf import GenClangConf
 
 logger = getLogger(__name__)
 
