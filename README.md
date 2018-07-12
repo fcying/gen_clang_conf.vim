@@ -21,7 +21,7 @@ It is used for generate `.clang_complete` for [ncm2](https://github.com/ncm2/ncm
 ## Commands
 * `:GenClangConf`  
 
-    Gen `.clang_complete` in scm dir, it will join all folders with contain (`c`, `cpp`, `h`) file
+    Gen `.clang_complete` in scm dir(`.root`, `.git`, `.svn`, `.hg`), it will join all folders with contain (`c`, `cpp`, `h`) file
     if not found scm dir, gen `.clang_complete` in current dir.
 
 * `:EditClangExt`  

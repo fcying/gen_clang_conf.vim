@@ -8,7 +8,7 @@ import shlex
 class GenClangConf():
     work_dir = ''
     clang_file = ''
-    scm_dirs = ['.git', '.svn', '.hg']
+    scm_dirs = ['.root', '.git', '.svn', '.hg']
     clang_conf_names = ['.clang_complete', '.clang']
 
     def __init__(self):
@@ -45,7 +45,8 @@ class GenClangConf():
                     for suffix in ['.c', '.cpp', '.h']:
                         if file.endswith(suffix):
                             is_added = 1
-                            clang.append('-I' + os.path.relpath(root, scm_root_dir))
+                            new_line = '-I' + os.path.relpath(root, scm_root_dir)
+                            clang.append(new_line.replace('\\', '/'))
                             break
                     if is_added:
                         break
