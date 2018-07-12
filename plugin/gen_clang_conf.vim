@@ -37,7 +37,6 @@ file = GenClangConf().get_clang_ext_path()
 if file:
   vim.command('edit ' + file)
 EOF
-"edit file
 endfunction
 
 command! -nargs=0 GenClangConf call s:gen_clang_conf()
