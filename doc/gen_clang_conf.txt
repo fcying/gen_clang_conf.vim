@@ -1,10 +1,8 @@
 # gen_clang_conf.vim
 
-plugin for [Vim](https://github.com/vim/vim)/[NeoVim](https://github.com/neovim/neovim) to ease the use of clang_config(`.clang` or `.clang_complete`).</br>
+plugin for [Vim](https://github.com/vim/vim)/[NeoVim](https://github.com/neovim/neovim) to ease the use `.clang_complete`.</br>
 
-It is used for generate and maintain clang_config and provide a clang completion source for [nvim-completion-manager](https://github.com/roxma/nvim-completion-manager) and [deoplete.nvim](https://github.com/Shougo/deoplete.nvim), tested on Windows/Linux. </br>
-
-`gen_clang_conf.vim` will detect SCM(git, hg, svn) root and use it as the project root path.
+It is used for generate `.clang_complete` for [ncm2](https://github.com/ncm2/ncm2) and [deoplete.nvim](https://github.com/Shougo/deoplete.nvim), tested on Windows/Linux. </br>
 
 ## Installation
 * [vim-plug](https://github.com/junegunn/vim-plug)
@@ -14,17 +12,43 @@ It is used for generate and maintain clang_config and provide a clang completion
 ## Options
 * `g:gen_clang_conf#ignore_dirs`
 
-    Specify the directories you want to exclude while `GenClangConf`, ignore case.
+    Specify the directories you want to exclude while `GenClangConf`, ignore case.  
+    default value:
+    ```vim
+    let g:gen_clang_conf#ignore_dirs = ['__pycache__', 'out', 'lib', 'build', 
+        \ 'cache', 'doc', 'docs']
+    ```
+
+
+* `g:gen_clang_conf#scm_list`
+
+    Specify the which directoriy is scm dir.  
+    default value:
+    ```vim
+    let g:gen_clang_conf#scm_list = ['.root', '.git', '.svn', '.hg']
+    ```
+
+
+* `g:gen_clang_conf#suffix_list`
+
+    Specify the which suffix file will be found.  
+    default value:
+    ```vim
+    let g:gen_clang_conf#suffix_list = ['.c', '.cpp', '.h']
+    ```
+
 
 ## Commands
 * `:GenClangConf`  
 
-    Gen `.clang` in scm dir, it will join all folders with contain (`c`, `cpp`, `h`) file
-    if not found scm dir, gen `.clang` in current dir.
+    Gen `.clang_complete` in scm dir, it will add all the directories 
+    containing the specified suffix files.  
+    if not found scm dir, gen `.clang_complete` in current dir.
 
 * `:EditClangExt`  
 
-    Edit an extend configuration file `.clang_ext` for this project, it will load before `.clang` file.
+    Edit an extend configuration file `.clang_ext` for this project,  
+    after call `:GenClangConf`, it will add to the top of `.clang_complete`.
 
 * `:ClearClangConf`  
 

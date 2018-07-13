@@ -4,17 +4,24 @@ import os
 from os.path import expanduser, expandvars, dirname, join, isfile, isdir
 from pathlib import Path
 import shlex
+import vim
 
 class GenClangConf():
     work_dir = ''
     clang_file = ''
-    scm_dirs = ['.root', '.git', '.svn', '.hg']
-    clang_conf_names = ['.clang_complete', '.clang']
+    ignore_dirs = []
+    scm_list = []
+    suffix_list = []
+    clang_conf_names = ['.clang_complete']
 
     def __init__(self):
         self.work_dir = os.getcwd()
+        self.suffix_list = vim.eval('g:gen_clang_conf#suffix_list')
+        self.scm_list = vim.eval('g:gen_clang_conf#scm_list')
+        self.ignore_dirs = vim.eval('g:gen_clang_conf#ignore_dirs')
+        self.ignore_dirs += self.scm_list
 
-    def gen_clang_conf(self, vim):
+    def gen_clang_conf(self):
         scm_dir = self._find_scm_dir()
         if not scm_dir:
             scm_dir = os.getcwd()
@@ -29,11 +36,8 @@ class GenClangConf():
         else:
             clang = []
 
-        ignore_dirs = vim.eval('g:gen_clang_conf#ignore_dirs')
-        ignore_dirs += self.scm_dirs
-
         for root, dirs, files in os.walk(scm_root_dir):
-            for ignore_dir in ignore_dirs:
+            for ignore_dir in self.ignore_dirs:
                 is_ignore_dir = 0
                 if root.lower().endswith(ignore_dir):
                     dirs[:] = []
@@ -42,7 +46,7 @@ class GenClangConf():
             if is_ignore_dir == 0:
                 for file in files:
                     is_added = 0
-                    for suffix in ['.c', '.cpp', '.h']:
+                    for suffix in self.suffix_list:
                         if file.endswith(suffix):
                             is_added = 1
                             new_line = '-I' + os.path.relpath(root, scm_root_dir)
@@ -92,7 +96,7 @@ class GenClangConf():
         cwd = Path(os.getcwd())
         dirs = [cwd.resolve()] + list(cwd.parents)
         for d in dirs:
-            for name in self.scm_dirs:
+            for name in self.scm_list:
                 scm_dir = join(str(d), name)
                 if isdir(scm_dir):
                     return scm_dir
@@ -129,9 +133,8 @@ class GenClangConf():
         return []
 
 if __name__ == '__main__':
-    import vim
     test = GenClangConf()
-    ret = test.gen_clang_conf(vim)
+    ret = test.gen_clang_conf()
     # print(ret)
 
 

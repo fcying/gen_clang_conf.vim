@@ -8,6 +8,14 @@ if !exists('g:gen_clang_conf#ignore_dirs')
         \ 'cache', 'doc', 'docs']
 endif
 
+if !exists('g:gen_clang_conf#scm_list')
+  let g:gen_clang_conf#scm_list = ['.root', '.git', '.svn', '.hg']
+endif
+
+if !exists('g:gen_clang_conf#suffix_list')
+  let g:gen_clang_conf#suffix_list = ['.c', '.cpp', '.h']
+endif
+
 py3 << EOF
 import vim, sys, os.path
 cwd = vim.eval('expand("<sfile>:p:h")')
@@ -17,7 +25,7 @@ EOF
 
 function! s:gen_clang_conf()
 py3 << EOF
-ret = GenClangConf().gen_clang_conf(vim)
+ret = GenClangConf().gen_clang_conf()
 if ret == 1:
   print("GenClangConf success")
 else:
