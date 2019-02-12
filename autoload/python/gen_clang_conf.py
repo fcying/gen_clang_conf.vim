@@ -21,6 +21,13 @@ class GenClangConf():
         self.ignore_dirs = vim.eval('g:gen_clang_conf#ignore_dirs')
         self.ignore_dirs += self.scm_list
 
+    def get_clang_conf_path(self):
+        scm_dir = self._find_scm_dir()
+        if not scm_dir:
+            scm_dir = os.getcwd()
+        clang_conf_path = join(scm_dir, '.clang_complete')
+        return clang_conf_path
+
     def gen_clang_conf(self):
         scm_dir = self._find_scm_dir()
         if not scm_dir:
@@ -29,10 +36,10 @@ class GenClangConf():
         else:
             scm_root_dir = str(Path(scm_dir).parent)
 
-        self.clang_file = join(scm_dir, '.clang_complete')
-        ext_file = join(scm_dir, '.clang_ext')
-        if isfile(ext_file):
-            clang = self._read_conf(ext_file)
+        self.clang_file = self.get_clang_conf_path()
+        if isfile(self.clang_file):
+            # read custom config
+            clang = self._read_conf(self.clang_file)
         else:
             clang = []
 
@@ -69,28 +76,11 @@ class GenClangConf():
             print("not found scm dir, ignore")
             return
 
-        ext_file = join(scm_dir, '.clang_ext')
         self.clang_file = join(scm_dir, '.clang')
         try:
             os.remove(self.clang_file)
         except Exception as e:
-            pass
-        try:
-            os.remove(ext_file)
-        except Exception as e:
-            pass
-
-    def get_clang_ext_path(self):
-        scm_dir = self._find_scm_dir()
-        if not scm_dir:
-            self._find_conf(self.clang_conf_names)
-            if not self.clang_file:
-                scm_dir = os.getcwd()
-            else:
-                scm_dir = dirname(self.clang_file)
-
-        ext_file = join(scm_dir, '.clang_ext')
-        return ext_file
+            print("clear_clang_conf error: ", str(e))
 
     def _find_scm_dir(self):
         cwd = Path(os.getcwd())
@@ -105,31 +95,17 @@ class GenClangConf():
     def _read_conf(self, conf_file):
         try:
             with open(conf_file) as f:
-                args = shlex.split(' '.join(f.readlines()))
+                args = f.read().splitlines()
+                split_line = args.index('')
+                if split_line is (len(args)-1):
+                    return []
+                args = args[0:split_line]
+                # print(args, split_line)
                 args = [expanduser(expandvars(p)) for p in args]
+                args.append('')
                 return args
         except Exception as e:
-            print('Parse Failed: ' + conf_file)
-        return []
-
-    def _find_conf(self, names):
-        self.clang_file = ''
-        cwd = Path(os.getcwd())
-        dirs = [cwd.resolve()] + list(cwd.parents)
-        for d in dirs:
-            for name in names:
-                self.clang_file = join(str(d), name)
-                if isfile(self.clang_file):
-                    break
-                self.clang_file = ''
-            if self.clang_file:
-                break
-
-        if self.clang_file:
-            self.work_dir = dirname(self.clang_file)
-            clang = self._read_conf(self.clang_file)
-            return clang
-
+            print('Parse Failed: ' + conf_file, str(e))
         return []
 
 if __name__ == '__main__':

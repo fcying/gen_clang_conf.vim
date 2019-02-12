@@ -13,7 +13,7 @@ if !exists('g:gen_clang_conf#scm_list')
 endif
 
 if !exists('g:gen_clang_conf#suffix_list')
-  let g:gen_clang_conf#suffix_list = ['.c', '.cpp', '.h']
+  let g:gen_clang_conf#suffix_list = ['.c', '.cc', '.cpp', '.h', '.hh']
 endif
 
 py3 << EOF
@@ -39,9 +39,9 @@ GenClangConf().clear_clang_conf()
 EOF
 endfunction
 
-function! s:edit_clang_ext()
+function! s:edit_clang_conf()
 py3 << EOF
-file = GenClangConf().get_clang_ext_path()
+file = GenClangConf().get_clang_conf_path()
 if file:
   vim.command('edit ' + file)
 EOF
@@ -49,5 +49,5 @@ endfunction
 
 command! -nargs=0 GenClangConf call s:gen_clang_conf()
 command! -nargs=0 ClearClangConf call s:clear_clang_conf()
-command! -nargs=0 EditClangExt call s:edit_clang_ext()
+command! -nargs=0 EditClangConf call s:edit_clang_conf()
 

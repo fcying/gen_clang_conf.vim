@@ -34,7 +34,7 @@ It is used for generate `.clang_complete` for [ncm2](https://github.com/ncm2/ncm
     Specify the which suffix file will be found.  
     default value:
     ```vim
-    let g:gen_clang_conf#suffix_list = ['.c', '.cpp', '.h']
+    let g:gen_clang_conf#suffix_list = ['.c', '.cc', '.cpp', '.h', '.hh']
     ```
 
 
@@ -45,11 +45,19 @@ It is used for generate `.clang_complete` for [ncm2](https://github.com/ncm2/ncm
     containing the specified suffix files.  
     if not found scm dir, gen `.clang_complete` in current dir.
 
-* `:EditClangExt`  
+* `:EditClangConf`  
 
-    Edit an extend configuration file `.clang_ext` for this project,  
-    after call `:GenClangConf`, it will add to the top of `.clang_complete`.
+    Edit clang configuration file `.clang_complete` for this project.  
+    The custom configuration is written at the beginning of the file,  
+    Use a blank line to split custom configuration and auto gen configuration.  
+    Ex:
+    ```
+    -DTEST
+
+    -Isrc
+    -Iinc
+    ```
 
 * `:ClearClangConf`  
 
-    Remove `.clang` and `.clang_ext` in scm dir.
+    Remove `.clang_complete` in scm dir.
