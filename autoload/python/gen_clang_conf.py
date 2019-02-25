@@ -39,7 +39,7 @@ class GenClangConf():
         self.clang_file = self.get_clang_conf_path()
         if isfile(self.clang_file):
             # read custom config
-            clang = self._read_conf(self.clang_file)
+            clang = self._read_custom_conf(self.clang_file)
         else:
             clang = []
 
@@ -92,11 +92,15 @@ class GenClangConf():
                     return scm_dir
         return ''
 
-    def _read_conf(self, conf_file):
+    def _read_custom_conf(self, conf_file):
         try:
             with open(conf_file) as f:
                 args = f.read().splitlines()
-                split_line = args.index('')
+                try:
+                    split_line = args.index('')
+                except ValueError as e:
+                    # not custome config
+                    return []
                 if split_line is (len(args)-1):
                     return []
                 args = args[0:split_line]
