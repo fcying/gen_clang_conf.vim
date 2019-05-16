@@ -12,38 +12,43 @@ class GenClangConf():
     ignore_dirs = []
     scm_list = []
     suffix_list = []
-    clang_conf_names = ['.clang_complete']
+    #.clang_complete
+    clang_conf_name = 'compile_flags.txt'
+    conf_save_in_scm = '0'
+    scm_dir = ''
+    root_dir = ''
 
     def __init__(self):
         self.work_dir = os.getcwd()
         self.suffix_list = vim.eval('g:gen_clang_conf#suffix_list')
         self.scm_list = vim.eval('g:gen_clang_conf#scm_list')
         self.ignore_dirs = vim.eval('g:gen_clang_conf#ignore_dirs')
+        self.clang_conf_name = vim.eval('g:gen_clang_conf#clang_conf_name')
+        self.conf_save_in_scm = vim.eval('g:gen_clang_conf#conf_save_in_scm')
         self.ignore_dirs += self.scm_list
 
     def get_clang_conf_path(self):
-        scm_dir = self._find_scm_dir()
-        if not scm_dir:
-            scm_dir = os.getcwd()
-        clang_conf_path = join(scm_dir, '.clang_complete')
+        self.scm_dir, self.root_dir = self._find_scm_dir()
+
+        if not self.scm_dir:
+            self.scm_dir = self.root_dir = os.getcwd()
+
+        if self.conf_save_in_scm == '1':
+            clang_conf_path = join(self.scm_dir, self.clang_conf_name)
+        else:
+            clang_conf_path = join(self.root_dir, self.clang_conf_name)
         return clang_conf_path
 
     def gen_clang_conf(self):
-        scm_dir = self._find_scm_dir()
-        if not scm_dir:
-            scm_dir = os.getcwd()
-            scm_root_dir = scm_dir
-        else:
-            scm_root_dir = str(Path(scm_dir).parent)
-
         self.clang_file = self.get_clang_conf_path()
+
         if isfile(self.clang_file):
             # read custom config
             clang = self._read_custom_conf(self.clang_file)
         else:
             clang = []
 
-        for root, dirs, files in os.walk(scm_root_dir):
+        for root, dirs, files in os.walk(self.root_dir):
             for ignore_dir in self.ignore_dirs:
                 is_ignore_dir = 0
                 if root.lower().endswith(ignore_dir):
@@ -56,7 +61,7 @@ class GenClangConf():
                     for suffix in self.suffix_list:
                         if file.endswith(suffix):
                             is_added = 1
-                            new_line = '-I' + os.path.relpath(root, scm_root_dir)
+                            new_line = '-I' + os.path.relpath(root, self.root_dir)
                             clang.append(new_line.replace('\\', '/'))
                             break
                     if is_added:
@@ -71,16 +76,12 @@ class GenClangConf():
         return 0
     
     def clear_clang_conf(self):
-        scm_dir = self._find_scm_dir()
-        if not scm_dir:
-            print("not found scm dir, ignore")
-            return
-
-        self.clang_file = join(scm_dir, '.clang')
-        try:
-            os.remove(self.clang_file)
-        except Exception as e:
-            print("clear_clang_conf error: ", str(e))
+        self.clang_file = self.get_clang_conf_path()
+        if isfile(self.clang_file):
+            try:
+                os.remove(self.clang_file)
+            except Exception as e:
+                print("clear_clang_conf error: ", str(e))
 
     def _find_scm_dir(self):
         cwd = Path(os.getcwd())
@@ -89,8 +90,8 @@ class GenClangConf():
             for name in self.scm_list:
                 scm_dir = join(str(d), name)
                 if isdir(scm_dir):
-                    return scm_dir
-        return ''
+                    return scm_dir, str(d)
+        return '', ''
 
     def _read_custom_conf(self, conf_file):
         try:

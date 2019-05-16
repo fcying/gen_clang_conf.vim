@@ -12,17 +12,17 @@ It is used for generate `.clang_complete` for [ncm2](https://github.com/ncm2/ncm
 ## Options
 * `g:gen_clang_conf#ignore_dirs`
 
-    Specify the directories you want to exclude while `GenClangConf`, ignore case.  
+    Specify the directories you want to exclude while `GenClangConf`, ignore case.
     default value:
     ```vim
-    let g:gen_clang_conf#ignore_dirs = ['__pycache__', 'out', 'lib', 'build', 
+    let g:gen_clang_conf#ignore_dirs = ['__pycache__', 'out', 'lib', 'build',
         \ 'cache', 'doc', 'docs']
     ```
 
 
 * `g:gen_clang_conf#scm_list`
 
-    Specify the which directoriy is scm dir.  
+    Specify the which directoriy is scm dir.
     default value:
     ```vim
     let g:gen_clang_conf#scm_list = ['.root', '.git', '.svn', '.hg']
@@ -31,25 +31,40 @@ It is used for generate `.clang_complete` for [ncm2](https://github.com/ncm2/ncm
 
 * `g:gen_clang_conf#suffix_list`
 
-    Specify the which suffix file will be found.  
+    Specify the which suffix file will be found.
     default value:
     ```vim
     let g:gen_clang_conf#suffix_list = ['.c', '.cc', '.cpp', '.h', '.hh']
     ```
 
 
-## Commands
-* `:GenClangConf`  
+* `g:gen_clang_conf#conf_save_in_scm`
 
-    Gen `.clang_complete` in scm dir, it will add all the directories 
-    containing the specified suffix files.  
+    if set `1`, clang_config file will save in scm dir.
+    default value: 0
+
+
+* `g:gen_clang_conf#clang_conf_name`
+
+    Specify clang config file name, ex: `compile_flags.txt`, `.clang_complete`.
+    default value: 
+    ```vim
+      let g:gen_clang_conf#clang_conf_name = 'compile_flags.txt'
+    ```
+
+
+## Commands
+* `:GenClangConf`
+
+    Gen `.clang_complete` in scm dir, it will add all the directories
+    containing the specified suffix files.
     if not found scm dir, gen `.clang_complete` in current dir.
 
-* `:EditClangConf`  
+* `:EditClangConf`
 
-    Edit clang configuration file `.clang_complete` for this project.  
-    The custom configuration is written at the beginning of the file,  
-    Use a blank line to split custom configuration and auto gen configuration.  
+    Edit clang configuration file `.clang_complete` for this project.
+    The custom configuration is written at the beginning of the file,
+    Use a blank line to split custom configuration and auto gen configuration.
     Ex:
     ```
     -DTEST
@@ -58,6 +73,6 @@ It is used for generate `.clang_complete` for [ncm2](https://github.com/ncm2/ncm
     -Iinc
     ```
 
-* `:ClearClangConf`  
+* `:ClearClangConf`
 
     Remove `.clang_complete` in scm dir.
