@@ -1,8 +1,8 @@
 # gen_clang_conf.vim
 
-plugin for [Vim](https://github.com/vim/vim)/[NeoVim](https://github.com/neovim/neovim) to ease the use `.clang_complete`.</br>
+plugin for [Vim](https://github.com/vim/vim)/[NeoVim](https://github.com/neovim/neovim) to easy use clang config.</br>
 
-It is used for generate `.clang_complete` for [ncm2](https://github.com/ncm2/ncm2) and [deoplete.nvim](https://github.com/Shougo/deoplete.nvim), tested on Windows/Linux. </br>
+It is used for generate config(`compile_flags.txt` or `ccls`) for `clangd` or `ccls`, tested on Windows/Linux. </br>
 
 ## Installation
 * [vim-plug](https://github.com/junegunn/vim-plug)
@@ -44,12 +44,21 @@ It is used for generate `.clang_complete` for [ncm2](https://github.com/ncm2/ncm
     default value: 0
 
 
+* `g:gen_clang_conf#default_conf`
+
+    Default config, add before autogen config.
+    default value:
+    ```vim
+    let g:gen_clang_conf#default_conf = ['%c -std=c11', '%cpp -std=c++14']
+    ```
+
+
 * `g:gen_clang_conf#clang_conf_name`
 
-    Specify clang config file name, ex: `compile_flags.txt`, `.clang_complete`.
+    Specify clang config file name, ex: `compile_flags.txt`, `.ccls`.
     default value: 
     ```vim
-      let g:gen_clang_conf#clang_conf_name = 'compile_flags.txt'
+      let g:gen_clang_conf#clang_conf_name = '.ccls'
     ```
 
 
@@ -69,6 +78,8 @@ It is used for generate `.clang_complete` for [ncm2](https://github.com/ncm2/ncm
     ```
     -DTEST
 
+    %c -std=c11
+    %cpp -std=c++14
     -Isrc
     -Iinc
     ```

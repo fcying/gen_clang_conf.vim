@@ -17,11 +17,15 @@ if !exists('g:gen_clang_conf#suffix_list')
 endif
 
 if !exists('g:gen_clang_conf#clang_conf_name')
-  let g:gen_clang_conf#clang_conf_name = 'compile_flags.txt'
+  let g:gen_clang_conf#clang_conf_name = '.ccls'
 endif
 
 if !exists('g:gen_clang_conf#conf_save_in_scm')
   let g:gen_clang_conf#conf_save_in_scm = 0
+endif
+
+if !exists('g:gen_clang_conf#default_conf')
+  let g:gen_clang_conf#default_conf = ['%c -std=c11', '%cpp -std=c++14']
 endif
 
 command! -nargs=0 GenClangConf call gen_clang_conf#gen_clang_conf()

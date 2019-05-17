@@ -24,8 +24,9 @@ class GenClangConf():
         self.scm_list = vim.eval('g:gen_clang_conf#scm_list')
         self.ignore_dirs = vim.eval('g:gen_clang_conf#ignore_dirs')
         self.clang_conf_name = vim.eval('g:gen_clang_conf#clang_conf_name')
-        self.conf_save_in_scm = vim.eval('g:gen_clang_conf#conf_save_in_scm')
+        self.conf_save_in_scm = int(vim.eval('g:gen_clang_conf#conf_save_in_scm'))
         self.ignore_dirs += self.scm_list
+        self.default_conf = vim.eval('g:gen_clang_conf#default_conf')
 
     def get_clang_conf_path(self):
         self.scm_dir, self.root_dir = self._find_scm_dir()
@@ -33,7 +34,7 @@ class GenClangConf():
         if not self.scm_dir:
             self.scm_dir = self.root_dir = os.getcwd()
 
-        if self.conf_save_in_scm == '1':
+        if self.conf_save_in_scm == 1:
             clang_conf_path = join(self.scm_dir, self.clang_conf_name)
         else:
             clang_conf_path = join(self.root_dir, self.clang_conf_name)
@@ -47,6 +48,9 @@ class GenClangConf():
             clang = self._read_custom_conf(self.clang_file)
         else:
             clang = []
+
+        for str in self.default_conf:
+            clang.append(str)
 
         for root, dirs, files in os.walk(self.root_dir):
             for ignore_dir in self.ignore_dirs:
