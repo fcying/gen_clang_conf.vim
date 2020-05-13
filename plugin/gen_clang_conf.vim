@@ -17,7 +17,7 @@ if !exists('g:gen_clang_conf#suffix_list')
 endif
 
 if !exists('g:gen_clang_conf#clang_conf_name')
-  let g:gen_clang_conf#clang_conf_name = '.ccls'
+  let g:gen_clang_conf#clang_conf_name = 'compile_flags.txt'
 endif
 
 if !exists('g:gen_clang_conf#conf_save_in_scm')
@@ -30,5 +30,5 @@ endif
 
 command! -nargs=0 GenClangConf call gen_clang_conf#gen_clang_conf()
 command! -nargs=0 ClearClangConf call gen_clang_conf#clear_clang_conf()
-command! -nargs=0 EditClangConf call gen_clang_conf#edit_clang_conf()
+command! -nargs=0 EditClangExt call gen_clang_conf#edit_clang_ext()
 

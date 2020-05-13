@@ -40,7 +40,7 @@ It is used for generate config(`compile_flags.txt` or `ccls`) for `clangd` or `c
 
 * `g:gen_clang_conf#conf_save_in_scm`
 
-    if set `1`, clang_config file will save in scm dir.
+    `1`, config will save in scm dir, `0`, save in scm's parent dir.
     default value: 0
 
 
@@ -55,33 +55,39 @@ It is used for generate config(`compile_flags.txt` or `ccls`) for `clangd` or `c
 
 * `g:gen_clang_conf#clang_conf_name`
 
-    Specify clang config file name, ex: `compile_flags.txt`, `.ccls`.
+    Specify clang config file name, ex: `compile_flags.txt`, `.ccls`, `.clang_complete`.
     default value: 
     ```vim
-      let g:gen_clang_conf#clang_conf_name = '.ccls'
+      let g:gen_clang_conf#clang_conf_name = 'compile_flags.txt'
     ```
 
 
 ## Commands
 * `:GenClangConf`
 
-    Gen `.clang_complete` in scm dir, it will add all the directories
+    Gen `compile_flags.txt` in scm's parent dir, it will add all the directories
     containing the specified suffix files.
-    if not found scm dir, gen `.clang_complete` in current dir.
+    if not found scm dir, gen `compile_flags.txt` in current dir.
 
-* `:EditClangConf`
+* `:EditClangExt`  
 
-    Edit clang configuration file `.clang_complete` for this project.
-    The custom configuration is written at the beginning of the file,
-    Use a blank line to split custom configuration and auto gen configuration.
+    Edit an extend configuration file `.clang_ext` for this project in scm dir,  
+    after call `:GenClangConf`, it will add to the top of `compile_flags.txt`.  
+    Use a blank line to split options(rewrite `g:gen_clang_conf#ignore_dirs`  
+    `g:gen_clang_conf#default_conf` `g:gen_clang_conf#default_conf` for this project)  
+    and clang config.  
+
     Ex:
     ```
-    -DTEST
+    ignore_dirs=out,build
+    suffix_list=.c,.h
+    default_conf=%c -std=c11,%cpp -std=c++14
 
-    -Isrc
-    -Iinc
+    -DDebug
+    -I$HOME/test/include
+    -I/usr/local/include
     ```
 
 * `:ClearClangConf`
 
-    Remove `.clang_complete` in scm dir.
+    Remove `compile_flags.txt`.

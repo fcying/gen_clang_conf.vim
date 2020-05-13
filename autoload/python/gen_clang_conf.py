@@ -7,26 +7,22 @@ import shlex
 import vim
 
 class GenClangConf():
-    work_dir = ''
-    clang_file = ''
-    ignore_dirs = []
-    scm_list = []
-    suffix_list = []
-    #.clang_complete
+    #.clang_complete .ccls
     clang_conf_name = 'compile_flags.txt'
-    conf_save_in_scm = '0'
+    clang_ext_name = '.clang_ext'
     scm_dir = ''
     root_dir = ''
 
     def __init__(self):
-        self.work_dir = os.getcwd()
+        self.rc = 0;
+        self.default_conf = vim.eval('g:gen_clang_conf#default_conf')
         self.suffix_list = vim.eval('g:gen_clang_conf#suffix_list')
         self.scm_list = vim.eval('g:gen_clang_conf#scm_list')
         self.ignore_dirs = vim.eval('g:gen_clang_conf#ignore_dirs')
-        self.clang_conf_name = vim.eval('g:gen_clang_conf#clang_conf_name')
         self.conf_save_in_scm = int(vim.eval('g:gen_clang_conf#conf_save_in_scm'))
+        self.clang_conf_name = vim.eval('g:gen_clang_conf#clang_conf_name')
+
         self.ignore_dirs += self.scm_list
-        self.default_conf = vim.eval('g:gen_clang_conf#default_conf')
 
     def get_clang_conf_path(self):
         self.scm_dir, self.root_dir = self._find_scm_dir()
@@ -40,18 +36,30 @@ class GenClangConf():
             clang_conf_path = join(self.root_dir, self.clang_conf_name)
         return clang_conf_path
 
-    def gen_clang_conf(self):
-        self.clang_file = self.get_clang_conf_path()
+    def get_clang_ext_path(self):
+        self.scm_dir, self.root_dir = self._find_scm_dir()
 
-        if isfile(self.clang_file):
-            # read custom config
-            clang = self._read_custom_conf(self.clang_file)
+        if not self.scm_dir:
+            self.scm_dir = self.root_dir = os.getcwd()
+
+        clang_ext_path = join(self.scm_dir, self.clang_ext_name)
+        return clang_ext_path
+
+    def gen_clang_conf(self):
+        clang_file = self.get_clang_conf_path()
+        ext_file = self.get_clang_ext_path()
+
+        # read custom config
+        if isfile(ext_file):
+            clang = self._read_custom_conf(ext_file)
         else:
             clang = []
 
-        for str in self.default_conf:
-            clang.append(str)
+        # default config
+        for str in self.default_conf[::-1]:
+            clang.insert(0, str)
 
+        # gen config
         for root, dirs, files in os.walk(self.root_dir):
             for ignore_dir in self.ignore_dirs:
                 is_ignore_dir = 0
@@ -70,22 +78,26 @@ class GenClangConf():
                             break
                     if is_added:
                         break
+        if self.rc != 0:
+            return -1
         try:
-            with open(self.clang_file, 'w') as f:
+            with open(clang_file, 'w') as f:
                 for line in clang:
-                    f.write(line + "\n")
-            return 1
+                    f.write(line + '\n')
+            return 0
         except Exception as e:
-            print('Save clang_file Failed: ' + self.clang_file + str(e))
-        return 0
+            self.rc = -1
+            print('Save clang_file Failed: ' + clang_file + str(e))
+        return -1
     
     def clear_clang_conf(self):
-        self.clang_file = self.get_clang_conf_path()
-        if isfile(self.clang_file):
+        file_path = self.get_clang_conf_path()
+        if isfile(file_path):
             try:
-                os.remove(self.clang_file)
+                os.remove(file_path)
             except Exception as e:
-                print("clear_clang_conf error: ", str(e))
+                self.rc = -1
+                print('clear_clang_conf error: ', str(e))
 
     def _find_scm_dir(self):
         cwd = Path(os.getcwd())
@@ -97,24 +109,41 @@ class GenClangConf():
                     return scm_dir, str(d)
         return '', ''
 
-    def _read_custom_conf(self, conf_file):
+    def _get_ext_options(self, data):
         try:
-            with open(conf_file) as f:
+            options = dict(item.split("=") for item in data)
+            # print(options)
+            if 'ignore_dirs' in options:
+                l = list(options.get('ignore_dirs').split(','))
+                self.ignore_dirs = l
+            if 'suffix_list' in options:
+                l = list(options.get('suffix_list').split(','))
+                self.suffix_list = l
+            if 'default_conf' in options:
+                l = list(options.get('default_conf').split(','))
+                self.default_conf = l
+        except Exception as e:
+            self.rc = -1
+            print('ext option error: ', str(e))
+
+    def _read_custom_conf(self, conf_path):
+        try:
+            with open(conf_path) as f:
                 args = f.read().splitlines()
                 try:
                     split_line = args.index('')
                 except ValueError as e:
-                    # not custome config
-                    return []
-                if split_line is (len(args)-1):
-                    return []
-                args = args[0:split_line]
-                # print(args, split_line)
+                    # not options config
+                    split_line = 0
+                self._get_ext_options(args[0:split_line])
+                args = args[split_line+1:]
+                # print(options,args, split_line)
                 args = [expanduser(expandvars(p)) for p in args]
                 args.append('')
                 return args
         except Exception as e:
-            print('Parse Failed: ' + conf_file, str(e))
+            self.rc = -1
+            print('ext file error: ' , str(e))
         return []
 
 if __name__ == '__main__':

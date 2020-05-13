@@ -13,7 +13,7 @@ EOF
 function! gen_clang_conf#gen_clang_conf() abort
 py3 << EOF
 ret = GenClangConf().gen_clang_conf()
-if ret == 1:
+if ret == 0:
   print("GenClangConf success")
 else:
   print("GenClangConf failed")
@@ -26,9 +26,9 @@ GenClangConf().clear_clang_conf()
 EOF
 endfunction
 
-function! gen_clang_conf#edit_clang_conf() abort
+function! gen_clang_conf#edit_clang_ext() abort
 py3 << EOF
-file = GenClangConf().get_clang_conf_path()
+file = GenClangConf().get_clang_ext_path()
 if file:
   vim.command('edit ' + file)
 EOF
