@@ -73,13 +73,13 @@ It is used for generate config(`compile_flags.txt` or `ccls`) for `clangd` or `c
 
     Edit an extend configuration file `.clang_ext` for this project in scm dir,  
     after call `:GenClangConf`, it will add to the top of `compile_flags.txt`.  
-    Use a blank line to split options(rewrite `g:gen_clang_conf#ignore_dirs`  
-    `g:gen_clang_conf#default_conf` `g:gen_clang_conf#default_conf` for this project)  
+    Use a blank line to split options(rewrite or append option value for this project)  
     and clang config.  
 
     Ex:
     ```
-    ignore_dirs=out,build
+    ignore_dirs=out,build,.cache
+    ignore_dirs_append=Release,Debug
     suffix_list=.c,.h
     default_conf=%c -std=c11,%cpp -std=c++14
 

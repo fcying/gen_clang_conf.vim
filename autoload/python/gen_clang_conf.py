@@ -15,10 +15,11 @@ class GenClangConf():
 
     def __init__(self):
         self.rc = 0;
+        self.ignore_dirs_extend = []
         self.default_conf = vim.eval('g:gen_clang_conf#default_conf')
         self.suffix_list = vim.eval('g:gen_clang_conf#suffix_list')
-        self.scm_list = vim.eval('g:gen_clang_conf#scm_list')
         self.ignore_dirs = vim.eval('g:gen_clang_conf#ignore_dirs')
+        self.scm_list = vim.eval('g:gen_clang_conf#scm_list')
         self.conf_save_in_scm = int(vim.eval('g:gen_clang_conf#conf_save_in_scm'))
         self.clang_conf_name = vim.eval('g:gen_clang_conf#clang_conf_name')
 
@@ -111,17 +112,12 @@ class GenClangConf():
 
     def _get_ext_options(self, data):
         try:
-            options = dict(item.split("=") for item in data)
-            # print(options)
-            if 'ignore_dirs' in options:
-                l = list(options.get('ignore_dirs').split(','))
-                self.ignore_dirs = l
-            if 'suffix_list' in options:
-                l = list(options.get('suffix_list').split(','))
-                self.suffix_list = l
-            if 'default_conf' in options:
-                l = list(options.get('default_conf').split(','))
-                self.default_conf = l
+            # print(data)
+            options = dict(item.split("=", 1) for item in data)
+            for option in options.keys():
+                l = list(options.get(option).split(','))
+                setattr(self, option, l)
+            self.ignore_dirs.extend(self.ignore_dirs_extend)
         except Exception as e:
             self.rc = -1
             print('ext option error: ', str(e))
