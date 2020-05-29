@@ -8,8 +8,8 @@ import vim
 
 class GenClangConf():
     #.clang_complete .ccls
-    clang_conf_name = 'compile_flags.txt'
-    clang_ext_name = '.clang_ext'
+    conf_name = 'compile_flags.txt'
+    ext_conf_name = '.clang_ext'
     scm_dir = ''
     root_dir = ''
 
@@ -21,44 +21,44 @@ class GenClangConf():
         self.ignore_dirs = vim.eval('g:gen_clang_conf#ignore_dirs')
         self.scm_list = vim.eval('g:gen_clang_conf#scm_list')
         self.conf_save_in_scm = int(vim.eval('g:gen_clang_conf#conf_save_in_scm'))
-        self.clang_conf_name = vim.eval('g:gen_clang_conf#clang_conf_name')
+        self.conf_name = vim.eval('g:gen_clang_conf#conf_name')
 
         self.ignore_dirs += self.scm_list
 
-    def get_clang_conf_path(self):
+    def get_conf_path(self):
         self.scm_dir, self.root_dir = self._find_scm_dir()
 
         if not self.scm_dir:
             self.scm_dir = self.root_dir = os.getcwd()
 
         if self.conf_save_in_scm == 1:
-            clang_conf_path = join(self.scm_dir, self.clang_conf_name)
+            clang_conf_path = join(self.scm_dir, self.conf_name)
         else:
-            clang_conf_path = join(self.root_dir, self.clang_conf_name)
+            clang_conf_path = join(self.root_dir, self.conf_name)
         return clang_conf_path
 
-    def get_clang_ext_path(self):
+    def get_ext_conf_path(self):
         self.scm_dir, self.root_dir = self._find_scm_dir()
 
         if not self.scm_dir:
             self.scm_dir = self.root_dir = os.getcwd()
 
-        clang_ext_path = join(self.scm_dir, self.clang_ext_name)
-        return clang_ext_path
+        ext_conf_path = join(self.scm_dir, self.ext_conf_name)
+        return ext_conf_path
 
     def gen_clang_conf(self):
-        clang_file = self.get_clang_conf_path()
-        ext_file = self.get_clang_ext_path()
+        conf_file = self.get_conf_path()
+        ext_file = self.get_ext_conf_path()
 
-        # read custom config
-        if isfile(ext_file):
-            clang = self._read_custom_conf(ext_file)
-        else:
-            clang = []
+        conf_list = []
 
         # default config
         for str in self.default_conf[::-1]:
-            clang.insert(0, str)
+            conf_list.insert(0, str)
+
+        # read custom config
+        if isfile(ext_file):
+            conf_list += self._read_custom_conf(ext_file)
 
         # gen config
         for root, dirs, files in os.walk(self.root_dir):
@@ -75,24 +75,37 @@ class GenClangConf():
                         if file.endswith(suffix):
                             is_added = 1
                             new_line = '-I' + os.path.relpath(root, self.root_dir)
-                            clang.append(new_line.replace('\\', '/'))
+                            conf_list.append(new_line.replace('\\', '/'))
                             break
                     if is_added:
                         break
+
+        if self.conf_name == '.ycm_extra_conf.py':
+            conf_lsit_bak = []
+            for line in conf_list: 
+                conf_lsit_bak.append('\'' + line + '\',')
+            conf_list = conf_lsit_bak
+            conf_list.insert(0, "flags = { 'flags': [")
+            conf_list.append(']}')
+            conf_list.append('def Settings( **kwargs ):')
+            conf_list.append('    return flags')
+
+        # print(conf_list)
+
         if self.rc != 0:
             return -1
         try:
-            with open(clang_file, 'w') as f:
-                for line in clang:
+            with open(conf_file, 'w') as f:
+                for line in conf_list:
                     f.write(line + '\n')
             return 0
         except Exception as e:
             self.rc = -1
-            print('Save clang_file Failed: ' + clang_file + str(e))
+            print('Save conf_file Failed: ' + conf_file + str(e))
         return -1
     
     def clear_clang_conf(self):
-        file_path = self.get_clang_conf_path()
+        file_path = self.get_conf_path()
         if isfile(file_path):
             try:
                 os.remove(file_path)
@@ -133,9 +146,9 @@ class GenClangConf():
                     split_line = 0
                 self._get_ext_options(args[0:split_line])
                 args = args[split_line+1:]
-                # print(options,args, split_line)
+                # print(args, split_line)
                 args = [expanduser(expandvars(p)) for p in args]
-                args.append('')
+                # args.append('')
                 return args
         except Exception as e:
             self.rc = -1

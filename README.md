@@ -2,7 +2,7 @@
 
 plugin for [Vim](https://github.com/vim/vim)/[NeoVim](https://github.com/neovim/neovim) to easy use clang config.</br>
 
-It is used for generate config(`compile_flags.txt` or `ccls`) for `clangd` or `ccls`, tested on Windows/Linux. </br>
+It is used for generate simple config file for `clangd`, `ccls`, `ycm`, tested on Windows/Linux. </br>
 
 ## Installation
 * [vim-plug](https://github.com/junegunn/vim-plug)
@@ -53,12 +53,12 @@ It is used for generate config(`compile_flags.txt` or `ccls`) for `clangd` or `c
     ```
 
 
-* `g:gen_clang_conf#clang_conf_name`
+* `g:gen_clang_conf#conf_name`
 
-    Specify clang config file name, ex: `compile_flags.txt`, `.ccls`, `.clang_complete`.
+    Specify clang config file name, ex: `compile_flags.txt`, `.ccls`, `.clang_complete`, `.ycm_extra_conf.py`.
     default value: 
     ```vim
-      let g:gen_clang_conf#clang_conf_name = 'compile_flags.txt'
+      let g:gen_clang_conf#conf_name = 'compile_flags.txt'
     ```
 
 
@@ -90,4 +90,4 @@ It is used for generate config(`compile_flags.txt` or `ccls`) for `clangd` or `c
 
 * `:ClearClangConf`
 
-    Remove `compile_flags.txt`.
+    Remove the generated file.

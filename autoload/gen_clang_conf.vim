@@ -28,7 +28,7 @@ endfunction
 
 function! gen_clang_conf#edit_clang_ext() abort
 py3 << EOF
-file = GenClangConf().get_clang_ext_path()
+file = GenClangConf().get_ext_conf_path()
 if file:
   vim.command('edit ' + file)
 EOF

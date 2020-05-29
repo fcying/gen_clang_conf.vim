@@ -16,8 +16,8 @@ if !exists('g:gen_clang_conf#suffix_list')
   let g:gen_clang_conf#suffix_list = ['.c', '.cc', '.cpp', '.h', '.hh']
 endif
 
-if !exists('g:gen_clang_conf#clang_conf_name')
-  let g:gen_clang_conf#clang_conf_name = 'compile_flags.txt'
+if !exists('g:gen_clang_conf#conf_name')
+  let g:gen_clang_conf#conf_name = 'compile_flags.txt'
 endif
 
 if !exists('g:gen_clang_conf#conf_save_in_scm')
