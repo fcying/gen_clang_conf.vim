@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import os
-from os.path import expanduser, expandvars, dirname, join, isfile, isdir
+from os.path import expanduser, expandvars, join, isfile, isdir
 from pathlib import Path
-import shlex
 import vim
 
 class GenClangConf():
@@ -62,8 +61,8 @@ class GenClangConf():
 
         # gen config
         for root, dirs, files in os.walk(self.root_dir):
+            is_ignore_dir = 0
             for ignore_dir in self.ignore_dirs:
-                is_ignore_dir = 0
                 if root.lower().endswith(ignore_dir):
                     dirs[:] = []
                     is_ignore_dir = 1
@@ -101,7 +100,7 @@ class GenClangConf():
             return 0
         except Exception as e:
             self.rc = -1
-            print('Save conf_file Failed: ' + conf_file + str(e))
+            print('Save {0} Failed: {1}'.format(conf_file, e))
         return -1
     
     def clear_clang_conf(self):
