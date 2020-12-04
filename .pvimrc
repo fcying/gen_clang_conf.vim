@@ -1,2 +1,0 @@
-nnoremap <leader>py :py3f autoload/python/gen_clang_conf.py<CR>
-nnoremap <leader>up :AsyncRun rsync -rval --partial --delete . ~/.vim/plugged/gen_clang_conf.vim<CR>

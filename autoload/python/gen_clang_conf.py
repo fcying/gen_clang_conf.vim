@@ -55,6 +55,10 @@ class GenClangConf():
         for str in self.default_conf[::-1]:
             conf_list.insert(0, str)
 
+        # ccls first line add 'clang'
+        if self.conf_name == '.ccls':
+            conf_list.insert(0, 'clang')
+
         # read custom config
         if isfile(ext_file):
             conf_list += self._read_custom_conf(ext_file)
@@ -125,7 +129,7 @@ class GenClangConf():
     def _get_ext_options(self, data):
         try:
             # print(data)
-            options = dict(item.split("=", 1) for item in data)
+            options = dict(item.split('=', 1) for item in data)
             for option in options.keys():
                 l = list(options.get(option).split(','))
                 setattr(self, option, l)
