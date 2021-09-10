@@ -1,2 +1,2 @@
 [build]
-command=rsync -rval --partial --delete $(VIM_ROOT)/ ~/.vim/.plugged/gen_clang_conf.vim/
+command=rsync -rval --partial --delete $(VIM_ROOT)/ ~/.vim/.plugged/pack/packager/opt/gen_clang_conf.vim/

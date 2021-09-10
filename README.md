@@ -69,25 +69,6 @@ It is used for generate simple config file for `clangd`, `ccls`, `ycm`, tested o
     containing the specified suffix files.
     if not found scm dir, gen `compile_flags.txt` in current dir.
 
-* `:EditClangExt`  
-
-    Edit an extend configuration file `.clang_ext` for this project in scm dir,  
-    after call `:GenClangConf`, it will add to the top of `compile_flags.txt`.  
-    Use a blank line to split options(rewrite or append option value for this project)  
-    and clang config.  
-
-    Ex:
-    ```
-    ignore_dirs=out,build,.cache
-    ignore_dirs_extend=Release,Debug
-    suffix_list=.c,.h
-    default_conf=%c -std=c11,%cpp -std=c++14
-
-    -DDebug
-    -I$HOME/test/include
-    -I/usr/local/include
-    ```
-
 * `:ClearClangConf`
 
     Remove the generated file.
