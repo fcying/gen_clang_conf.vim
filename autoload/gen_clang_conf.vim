@@ -42,36 +42,41 @@ function! s:get_conf_path()
   endif
 endfunction
 
-function! s:vim_get_dirlist(root_dir)
+function! s:vim_get_filelist(root_dir)
   let l:path_list = split(a:root_dir, s:delimiter)
   for dir in s:ignore_dirs
     if l:path_list[-1] ==# dir
       return
     endif
   endfor
-  "echo a:root_dir . ' enter=============='
-  let l:filelist = readdir(a:root_dir)
-  let l:isadd = 0
-  for str in l:filelist
-    if file_readable(a:root_dir . s:delimiter . str)
-      if l:isadd
-        continue
-      endif
+  for str in readdir(a:root_dir)
+    let l:full_path = a:root_dir . s:delimiter . str
+    if file_readable(l:full_path)
+      for ignore_file in g:gen_clang_conf#ignore_files
+      endfor
       for suffix in g:gen_clang_conf#suffix_list
         if fnamemodify(str, ':e') == suffix
-          call add(s:dir_list, a:root_dir)
-          let l:isadd = 1
+          let l:file_name = fnamemodify(str, ':t')
+          let l:is_ignore_file = 0
+          for ignore_file in g:gen_clang_conf#ignore_files
+            if l:file_name == ignore_file
+              let l:is_ignore_file = 1
+              break
+            endif
+          endfor
+          if l:is_ignore_file ==# 0
+            call add(s:file_list, l:full_path)
+          endif
           break
         endif
       endfor
-    elseif isdirectory(a:root_dir . s:delimiter . str)
-      call s:vim_get_dirlist(a:root_dir . s:delimiter . str)
+    elseif isdirectory(l:full_path)
+      call s:vim_get_filelist(l:full_path)
     endif
   endfor
 endfunction
 
-function! s:get_dir_list()
-  let s:dir_list = []
+function! s:get_file_list()
   if executable('rg')
     let l:cmd = 'rg --no-messages --no-config --files '
     for str in s:ignore_dirs
@@ -88,23 +93,33 @@ function! s:get_dir_list()
         let l:cmd = l:cmd . "-g='*." . str . "' "
       endif
     endfor
+    for str in g:gen_clang_conf#ignore_files
+      if s:is_win
+        let l:cmd = l:cmd . '-g="!' . str . '" '
+      else
+        let l:cmd = l:cmd . "-g='!" . str . "' "
+      endif
+    endfor
+    let l:cmd = l:cmd . ' ' . fnamemodify(s:root_dir, ':p')
     "echo l:cmd
-    let l:file_list = systemlist(l:cmd)
-    for str in l:file_list
-      call add(s:dir_list, '-I' . substitute(fnamemodify(str, ':h'), '\\', '/', 'g'))
-    endfor
+    let s:file_list = systemlist(l:cmd)
   else
-    call s:vim_get_dirlist(s:root_dir)
-    for index in range(len(s:dir_list))
-      let s:dir_list[index] = substitute(s:dir_list[index], s:root_dir . s:delimiter , '', '')
-      let s:dir_list[index] = '-I' . substitute(s:dir_list[index], '\\', '/', 'g')
-    endfor
+    let s:file_list = []
+    call s:vim_get_filelist(s:root_dir)
   endif
+  "echo s:file_list
+endfunction
 
+function! s:get_dir_list()
+  let s:dir_list = []
+  call s:get_file_list()
+  for str in s:file_list
+    let l:rel_path = substitute(str, s:root_dir . s:delimiter , '', '')
+    call add(s:dir_list, '-I' . substitute(fnamemodify(l:rel_path, ':h'), '\\', '/', 'g'))
+  endfor
   call sort(s:dir_list)
   call uniq(s:dir_list)
   "echo s:dir_list
-  return s:dir_list
 endfunction
 
 function! gen_clang_conf#gen_clang_conf() abort
@@ -118,7 +133,8 @@ function! gen_clang_conf#gen_clang_conf() abort
   endfor
 
   "gen config
-  for config in s:get_dir_list()
+  call s:get_dir_list()
+  for config in s:dir_list
     call add(l:conf_list, config)
   endfor
 
@@ -146,4 +162,28 @@ function! gen_clang_conf#clear_clang_conf() abort
   call s:get_conf_path()
   call delete(s:conf_path)
   echo 'ClearClangConf success'
+endfunction
+
+function! gen_clang_conf#gen_ctags() abort
+  call s:get_root_dir()
+  call s:get_file_list()
+  let l:cmd = ''
+  for str in s:file_list
+      let l:cmd = l:cmd . ' ' . str
+  endfor
+  "echo l:cmd
+  if executable(g:gen_clang_conf#ctags_bin)
+    exec 'silent !' . g:gen_clang_conf#ctags_bin . ' -f ' . s:scm_dir . '/tags' . l:cmd
+  endif
+  redraw
+endfunction
+
+function! gen_clang_conf#clear_ctags() abort
+  call s:get_root_dir()
+  if filereadable(s:scm_dir . '/tags')
+    call delete(s:scm_dir . '/tags')
+  elseif filereadable(s:root_dir . '/tags')
+    call delete(s:root_dir . '/tags')
+  endif
+  echo 'ClearCtags success'
 endfunction

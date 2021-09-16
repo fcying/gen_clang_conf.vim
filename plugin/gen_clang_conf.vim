@@ -8,6 +8,10 @@ if !exists('g:gen_clang_conf#ignore_dirs')
         \ 'cache', 'doc', 'docs']
 endif
 
+if !exists('g:gen_clang_conf#ignore_files')
+  let g:gen_clang_conf#ignore_files = []
+endif
+
 if !exists('g:gen_clang_conf#scm_list')
   let g:gen_clang_conf#scm_list = ['.root', '.git', '.svn', '.hg']
 endif
@@ -28,6 +32,16 @@ if !exists('g:gen_clang_conf#default_conf')
   let g:gen_clang_conf#default_conf = ['%c -std=c11', '%cpp -std=c++14']
 endif
 
+if !exists('g:gen_clang_conf#ctags_bin')
+  let g:gen_clang_conf#ctags_bin = 'ctags'
+endif
+
+if !exists('g:gen_clang_conf#ctags_opts')
+  let g:gen_clang_conf#ctags_opts = ''
+endif
+
 command! -nargs=0 GenClangConf call gen_clang_conf#gen_clang_conf()
 command! -nargs=0 ClearClangConf call gen_clang_conf#clear_clang_conf()
+command! -nargs=0 GenCtags call gen_clang_conf#gen_ctags()
+command! -nargs=0 ClearCtags call gen_clang_conf#clear_ctags()
 
