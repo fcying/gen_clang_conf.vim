@@ -83,7 +83,7 @@ get file list default use `rg`, if not have, use vim script(may be slow). </br>
 * `g:gen_clang_conf#ctags_opts`
 
     Set ctags options.</br>
-    default value: `--c++-kinds=+px --c-kinds=+px`
+    default value: `--languages=c++ --languages=+c`
 
 
 * `g:gen_clang_conf#load_tags`

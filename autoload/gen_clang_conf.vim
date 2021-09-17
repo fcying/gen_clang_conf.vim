@@ -10,6 +10,9 @@ let s:ignore_dirs = []
 let s:is_win = has('win32')
 let s:ctags_name = '/prj_tags'
 
+let s:file_list = []
+let s:dir_list = []
+
 if s:is_win
   let s:delimiter = '\'
 else
@@ -135,6 +138,10 @@ function! gen_clang_conf#gen_clang_conf() abort
 
   "gen config
   call s:get_dir_list()
+  if empty(s:dir_list)
+    echo 'not found files with suffix_list'
+    return
+  endif
   for config in s:dir_list
     call add(l:conf_list, config)
   endfor
@@ -167,15 +174,19 @@ endfunction
 
 function! gen_clang_conf#gen_ctags() abort
   call s:get_root_dir()
-  call s:get_file_list()
   let l:cmd = ''
-  for str in s:file_list
-      let l:cmd = l:cmd . ' ' . str
+  for str in s:ignore_dirs
+    let l:cmd = l:cmd . '--exclude="' . str . '" '
+  endfor
+  for str in g:gen_clang_conf#ignore_files
+    let l:cmd = l:cmd . '--exclude="' . str . '" '
   endfor
   "echo l:cmd
   if executable(g:gen_clang_conf#ctags_bin)
     exec 'silent !' . g:gen_clang_conf#ctags_bin .
-          \ ' -f ' . s:scm_dir . s:ctags_name . l:cmd
+          \ ' -R -f ' . s:scm_dir . s:ctags_name .
+          \ ' ' . g:gen_clang_conf#ctags_opts .
+          \ ' ' . l:cmd . ' ' . s:root_dir
     if filereadable(expand(g:scm_dir . s:ctags_name)) != 0
       exec 'set tags^=' . g:scm_dir . s:ctags_name
     endif
