@@ -83,7 +83,13 @@ get file list default use `rg`, if not have, use vim script(may be slow). </br>
 * `g:gen_clang_conf#ctags_opts`
 
     Set ctags options.</br>
-    default value: `''`
+    default value: `--c++-kinds=+px --c-kinds=+px`
+
+
+* `g:gen_clang_conf#load_tags`
+
+    Auto load tags in scm_dir.</br>
+    default value: `1`
 
 
 ## Commands
@@ -99,7 +105,7 @@ get file list default use `rg`, if not have, use vim script(may be slow). </br>
 
 * `:GenCtags`
 
-    Gen `tags` in scm's dir.</br>
+    Gen `prj_tags` in scm's dir.</br>
     if not found scm dir, gen in current dir.
 
 * `:ClearCtags`

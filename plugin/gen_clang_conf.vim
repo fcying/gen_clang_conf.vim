@@ -37,7 +37,15 @@ if !exists('g:gen_clang_conf#ctags_bin')
 endif
 
 if !exists('g:gen_clang_conf#ctags_opts')
-  let g:gen_clang_conf#ctags_opts = ''
+  let g:gen_clang_conf#ctags_opts = '--c++-kinds=+px --c-kinds=+px'
+endif
+
+if !exists('g:gen_clang_conf#load_tags')
+  let g:gen_clang_conf#load_tags = 1
+endif
+
+if g:gen_clang_conf#load_tags ==# 1
+  call gen_clang_conf#load_tags()
 endif
 
 command! -nargs=0 GenClangConf call gen_clang_conf#gen_clang_conf()

@@ -8,6 +8,7 @@ let s:scm_dir = ''
 let s:root_dir = ''
 let s:ignore_dirs = []
 let s:is_win = has('win32')
+let s:ctags_name = '/prj_tags'
 
 if s:is_win
   let s:delimiter = '\'
@@ -173,17 +174,30 @@ function! gen_clang_conf#gen_ctags() abort
   endfor
   "echo l:cmd
   if executable(g:gen_clang_conf#ctags_bin)
-    exec 'silent !' . g:gen_clang_conf#ctags_bin . ' -f ' . s:scm_dir . '/tags' . l:cmd
+    exec 'silent !' . g:gen_clang_conf#ctags_bin .
+          \ ' -f ' . s:scm_dir . s:ctags_name . l:cmd
+    if filereadable(expand(g:scm_dir . s:ctags_name)) != 0
+      exec 'set tags^=' . g:scm_dir . s:ctags_name
+    endif
+  else
+    echom "need install ctags"
   endif
   redraw
 endfunction
 
+function! gen_clang_conf#load_tags() abort
+  call s:get_root_dir()
+  if filereadable(expand(g:scm_dir . s:ctags_name)) != 0
+    exec 'set tags^=' . g:scm_dir . s:ctags_name
+  endif
+endfunction
+
 function! gen_clang_conf#clear_ctags() abort
   call s:get_root_dir()
-  if filereadable(s:scm_dir . '/tags')
-    call delete(s:scm_dir . '/tags')
-  elseif filereadable(s:root_dir . '/tags')
-    call delete(s:root_dir . '/tags')
+  if filereadable(s:scm_dir . s:ctags_name)
+    call delete(s:scm_dir . s:ctags_name)
+  elseif filereadable(s:root_dir . s:ctags_name)
+    call delete(s:root_dir . s:ctags_name)
   endif
   echo 'ClearCtags success'
 endfunction
