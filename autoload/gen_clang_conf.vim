@@ -6,7 +6,6 @@
 
 let s:scm_dir = ''
 let s:root_dir = ''
-let s:ignore_dirs = []
 let s:is_win = has('win32')
 let s:ctags_name = '/prj_tags'
 
@@ -33,8 +32,10 @@ function! s:get_root_dir()
     let s:scm_dir = getcwd()
     let s:root_dir = getcwd()
   endif
-  let s:ignore_dirs = g:gen_clang_conf#ignore_dirs
-  call extend(s:ignore_dirs, g:gen_clang_conf#scm_list)
+  if !exists('s:ignore_dirs')
+    let s:ignore_dirs = g:gen_clang_conf#ignore_dirs
+    call extend(s:ignore_dirs, g:gen_clang_conf#scm_list)
+  endif
 endfunction
 
 function! s:get_conf_path()
@@ -105,13 +106,13 @@ function! s:get_file_list()
       endif
     endfor
     let l:cmd = l:cmd . ' ' . fnamemodify(s:root_dir, ':p')
-    "echo l:cmd
+    "echom l:cmd
     let s:file_list = systemlist(l:cmd)
   else
     let s:file_list = []
     call s:vim_get_filelist(s:root_dir)
   endif
-  "echo s:file_list
+  "echom s:file_list
 endfunction
 
 function! s:get_dir_list()
@@ -123,7 +124,7 @@ function! s:get_dir_list()
   endfor
   call sort(s:dir_list)
   call uniq(s:dir_list)
-  "echo s:dir_list
+  "echom s:dir_list
 endfunction
 
 function! gen_clang_conf#gen_clang_conf() abort
@@ -139,7 +140,7 @@ function! gen_clang_conf#gen_clang_conf() abort
   "gen config
   call s:get_dir_list()
   if empty(s:dir_list)
-    echo 'not found files with suffix_list'
+    echom 'not found files with suffix_list'
     return
   endif
   for config in s:dir_list
@@ -163,13 +164,15 @@ function! gen_clang_conf#gen_clang_conf() abort
   "echom l:conf_list
   call writefile(l:conf_list, s:conf_path)
 
-  echo 'GenClangConf success'
+  echom 'GenClangConf success'
+  redraw
 endfunction
 
 function! gen_clang_conf#clear_clang_conf() abort
   call s:get_conf_path()
   call delete(s:conf_path)
-  echo 'ClearClangConf success'
+  echom 'ClearClangConf success'
+  redraw
 endfunction
 
 function! gen_clang_conf#gen_ctags() abort
@@ -181,18 +184,24 @@ function! gen_clang_conf#gen_ctags() abort
   for str in g:gen_clang_conf#ignore_files
     let l:cmd = l:cmd . '--exclude="' . str . '" '
   endfor
-  "echo l:cmd
+  "echom l:cmd
   if executable(g:gen_clang_conf#ctags_bin)
-    exec 'silent !' . g:gen_clang_conf#ctags_bin .
+    call gen_clang_conf#job#start(g:gen_clang_conf#ctags_bin .
           \ ' -R -f ' . s:scm_dir . s:ctags_name .
           \ ' ' . g:gen_clang_conf#ctags_opts .
-          \ ' ' . l:cmd . ' ' . s:root_dir
+          \ ' ' . l:cmd . ' ' . s:root_dir,
+          \ function('s:gen_ctags_end'))
     if filereadable(expand(g:scm_dir . s:ctags_name)) != 0
       exec 'set tags^=' . g:scm_dir . s:ctags_name
     endif
   else
     echom "need install ctags"
   endif
+endfunction
+
+function! s:gen_ctags_end(...) abort
+  call gen_clang_conf#load_tags()
+  echom "GenCtags success"
   redraw
 endfunction
 
@@ -205,10 +214,7 @@ endfunction
 
 function! gen_clang_conf#clear_ctags() abort
   call s:get_root_dir()
-  if filereadable(s:scm_dir . s:ctags_name)
-    call delete(s:scm_dir . s:ctags_name)
-  elseif filereadable(s:root_dir . s:ctags_name)
-    call delete(s:root_dir . s:ctags_name)
-  endif
-  echo 'ClearCtags success'
+  call delete(s:scm_dir . s:ctags_name)
+  echom 'ClearCtags success'
+  redraw
 endfunction
