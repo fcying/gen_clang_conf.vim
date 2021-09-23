@@ -32,12 +32,12 @@ get file list default use `rg`, if not have, use vim script(may be slow). </br>
     ```
 
 
-* `g:gencconf_scm_list`
+* `g:gencconf_root_markers`
 
     Specify the which directoriy is scm dir.</br>
     default value:
     ```vim
-    let g:gencconf_scm_list = ['.root', '.git', '.svn', '.hg']
+    let g:gencconf_root_markers = ['.root', '.git', '.svn', '.hg']
     ```
 
 
@@ -46,31 +46,39 @@ get file list default use `rg`, if not have, use vim script(may be slow). </br>
     Specify the which suffix file will be found.</br>
     default value:
     ```vim
-    let g:gencconf_suffix_list = ['.c', '.cc', '.cpp', '.h', '.hh']
+    let g:gencconf_suffix_list = { 'c': ['c'], 'cpp': ['cc', 'cpp'], 'h': ['h', 'hh']}
     ```
 
 
-* `g:gencconf_conf_save_in_scm`
+* `g:gencconf_storein_rootmarker`
 
     `1`, config will save in scm dir, `0`, save in scm's parent dir.</br>
-    default value: 0
+    default value: 1
 
 
-* `g:gencconf_default_conf`
+* `g:gencconf_relative_path`
 
-    Default config, add before autogen config.</br>
+    `0`: full path, `1`: relative path.</br>
+    default value: 1
+
+
+* `g:gencconf_default_options`
+
+    Default options, add before autogen config.</br>
+    only`compile_commands.json` use `cpp` options.
+
     default value:
     ```vim
-    let g:gencconf_default_conf = ['%c -std=c11', '%cpp -std=c++14']
+    let g:gencconf_default_options = {'c': ['gcc', '-c', '-std=c11'], 'cpp': ['g++', '-c', '-std=c++14']}
     ```
 
 
 * `g:gencconf_conf_name`
 
-    Specify clang config file name, ex: `compile_flags.txt`, `.ccls`, `.clang_complete`, `.ycm_extra_conf.py`.</br>
+    Specify clang config file name, ex: `compile_commands.json`, `compile_flags.txt`, `.ccls`, `.ycm_extra_conf.py`.</br>
     default value: 
     ```vim
-      let g:gencconf_conf_name = 'compile_flags.txt'
+      let g:gencconf_conf_name = 'compile_commands.json'
     ```
 
 
@@ -88,7 +96,7 @@ get file list default use `rg`, if not have, use vim script(may be slow). </br>
 
 * `g:gencconf_load_tags`
 
-    Auto load tags in scm_dir.</br>
+    Auto load tags in root_marker.</br>
     default value: `1`
 
 

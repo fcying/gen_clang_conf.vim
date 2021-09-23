@@ -3,41 +3,10 @@
 " Author: fcying
 " ============================================================================
 
-if !exists('g:gencconf_ignore_dirs')
-  let g:gencconf_ignore_dirs = ['__pycache__', 'out', 'lib', 'build', 
-        \ 'cache', 'doc', 'docs']
-endif
-
-if !exists('g:gencconf_ignore_files')
-  let g:gencconf_ignore_files = []
-endif
-
-if !exists('g:gencconf_scm_list')
-  let g:gencconf_scm_list = ['.root', '.git', '.svn', '.hg']
-endif
-
-if !exists('g:gencconf_suffix_list')
-  let g:gencconf_suffix_list = ['c', 'cc', 'cpp', 'h', 'hh']
-endif
-
-if !exists('g:gencconf_conf_name')
-  let g:gencconf_conf_name = 'compile_flags.txt'
-endif
-
-if !exists('g:gencconf_conf_save_in_scm')
-  let g:gencconf_conf_save_in_scm = 0
-endif
-
-if !exists('g:gencconf_default_conf')
-  let g:gencconf_default_conf = ['%c -std=c11', '%cpp -std=c++14']
-endif
-
-if !exists('g:gencconf_ctags_bin')
-  let g:gencconf_ctags_bin = 'ctags'
-endif
-
-if !exists('g:gencconf_ctags_opts')
-  let g:gencconf_ctags_opts = '--languages=c++ --languages=+c'
+if exists('g:gencconf_loaded')
+    finish
+else
+    let g:gencconf_loaded = 1
 endif
 
 if !exists('g:gencconf_load_tags')
