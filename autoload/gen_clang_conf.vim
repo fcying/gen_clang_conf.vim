@@ -19,7 +19,7 @@ else
 endif
 
 function! s:get_root_dir()
-  for l:item in g:gen_clang_conf#scm_list
+  for l:item in g:gencconf_scm_list
     let l:dir = finddir(l:item, '.;')
     if !empty(l:dir)
       break
@@ -33,17 +33,17 @@ function! s:get_root_dir()
     let s:root_dir = getcwd()
   endif
   if !exists('s:ignore_dirs')
-    let s:ignore_dirs = g:gen_clang_conf#ignore_dirs
-    call extend(s:ignore_dirs, g:gen_clang_conf#scm_list)
+    let s:ignore_dirs = g:gencconf_ignore_dirs
+    call extend(s:ignore_dirs, g:gencconf_scm_list)
   endif
 endfunction
 
 function! s:get_conf_path()
   call s:get_root_dir()
-  if g:gen_clang_conf#conf_save_in_scm ==# 1
-    let s:conf_path = s:scm_dir . s:delimiter . g:gen_clang_conf#conf_name
+  if g:gencconf_conf_save_in_scm ==# 1
+    let s:conf_path = s:scm_dir . s:delimiter . g:gencconf_conf_name
   else
-    let s:conf_path = s:root_dir . s:delimiter . g:gen_clang_conf#conf_name
+    let s:conf_path = s:root_dir . s:delimiter . g:gencconf_conf_name
   endif
 endfunction
 
@@ -57,13 +57,13 @@ function! s:vim_get_filelist(root_dir)
   for str in readdir(a:root_dir)
     let l:full_path = a:root_dir . s:delimiter . str
     if file_readable(l:full_path)
-      for ignore_file in g:gen_clang_conf#ignore_files
+      for ignore_file in g:gencconf_ignore_files
       endfor
-      for suffix in g:gen_clang_conf#suffix_list
+      for suffix in g:gencconf_suffix_list
         if fnamemodify(str, ':e') == suffix
           let l:file_name = fnamemodify(str, ':t')
           let l:is_ignore_file = 0
-          for ignore_file in g:gen_clang_conf#ignore_files
+          for ignore_file in g:gencconf_ignore_files
             if l:file_name == ignore_file
               let l:is_ignore_file = 1
               break
@@ -91,14 +91,14 @@ function! s:get_file_list()
         let l:cmd = l:cmd . "-g='!" . str . "' "
       endif
     endfor
-    for str in g:gen_clang_conf#suffix_list
+    for str in g:gencconf_suffix_list
       if s:is_win
         let l:cmd = l:cmd . '-g="*.' . str . '" '
       else
         let l:cmd = l:cmd . "-g='*." . str . "' "
       endif
     endfor
-    for str in g:gen_clang_conf#ignore_files
+    for str in g:gencconf_ignore_files
       if s:is_win
         let l:cmd = l:cmd . '-g="!' . str . '" '
       else
@@ -133,7 +133,7 @@ function! gen_clang_conf#gen_clang_conf() abort
   let l:conf_list = []
 
   "default config
-  for str in g:gen_clang_conf#default_conf
+  for str in g:gencconf_default_conf
     call add(l:conf_list, str)
   endfor
 
@@ -148,9 +148,9 @@ function! gen_clang_conf#gen_clang_conf() abort
   endfor
 
   "add special config
-  if g:gen_clang_conf#conf_name ==# '.ccls'
+  if g:gencconf_conf_name ==# '.ccls'
     call insert(l:conf_list, 'clang')
-  elseif g:gen_clang_conf#conf_name ==# '.ycm_extra_conf.py'
+  elseif g:gencconf_conf_name ==# '.ycm_extra_conf.py'
     for index in range(len(l:conf_list))
       let l:conf_list[index] = "'" . l:conf_list[index] . "',"
     endfor
@@ -181,14 +181,14 @@ function! gen_clang_conf#gen_ctags() abort
   for str in s:ignore_dirs
     let l:cmd = l:cmd . '--exclude="' . str . '" '
   endfor
-  for str in g:gen_clang_conf#ignore_files
+  for str in g:gencconf_ignore_files
     let l:cmd = l:cmd . '--exclude="' . str . '" '
   endfor
   "echom l:cmd
-  if executable(g:gen_clang_conf#ctags_bin)
-    call gen_clang_conf#job#start(g:gen_clang_conf#ctags_bin .
+  if executable(g:gencconf_ctags_bin)
+    call gen_clang_conf#job#start(g:gencconf_ctags_bin .
           \ ' -R -f ' . s:scm_dir . s:ctags_name .
-          \ ' ' . g:gen_clang_conf#ctags_opts .
+          \ ' ' . g:gencconf_ctags_opts .
           \ ' ' . l:cmd . ' ' . s:root_dir,
           \ function('s:gen_ctags_end'))
     if filereadable(expand(g:scm_dir . s:ctags_name)) != 0

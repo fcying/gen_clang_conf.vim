@@ -12,81 +12,81 @@ get file list default use `rg`, if not have, use vim script(may be slow). </br>
     `Plug 'fcying/gen_clang_conf.vim'`
 
 ## Options
-* `g:gen_clang_conf#ignore_dirs`
+* `g:gencconf_ignore_dirs`
 
     Specify the directories you want to exclude while generate config or tags.</br>
     default value:
     ```vim
-    let g:gen_clang_conf#ignore_dirs = ['__pycache__', 'out', 'lib', 'build',
+    let g:gencconf_ignore_dirs = ['__pycache__', 'out', 'lib', 'build',
         \ 'cache', 'doc', 'docs']
     ```
 
 
-* `g:gen_clang_conf#ignore_files`
+* `g:gencconf_ignore_files`
 
     Specify the files you want to exclude while generate config or tags.</br>
     default value:
     ```vim
-    let g:gen_clang_conf#ignore_dirs = ['__pycache__', 'out', 'lib', 'build',
+    let g:gencconf_ignore_dirs = ['__pycache__', 'out', 'lib', 'build',
         \ 'cache', 'doc', 'docs']
     ```
 
 
-* `g:gen_clang_conf#scm_list`
+* `g:gencconf_scm_list`
 
     Specify the which directoriy is scm dir.</br>
     default value:
     ```vim
-    let g:gen_clang_conf#scm_list = ['.root', '.git', '.svn', '.hg']
+    let g:gencconf_scm_list = ['.root', '.git', '.svn', '.hg']
     ```
 
 
-* `g:gen_clang_conf#suffix_list`
+* `g:gencconf_suffix_list`
 
     Specify the which suffix file will be found.</br>
     default value:
     ```vim
-    let g:gen_clang_conf#suffix_list = ['.c', '.cc', '.cpp', '.h', '.hh']
+    let g:gencconf_suffix_list = ['.c', '.cc', '.cpp', '.h', '.hh']
     ```
 
 
-* `g:gen_clang_conf#conf_save_in_scm`
+* `g:gencconf_conf_save_in_scm`
 
     `1`, config will save in scm dir, `0`, save in scm's parent dir.</br>
     default value: 0
 
 
-* `g:gen_clang_conf#default_conf`
+* `g:gencconf_default_conf`
 
     Default config, add before autogen config.</br>
     default value:
     ```vim
-    let g:gen_clang_conf#default_conf = ['%c -std=c11', '%cpp -std=c++14']
+    let g:gencconf_default_conf = ['%c -std=c11', '%cpp -std=c++14']
     ```
 
 
-* `g:gen_clang_conf#conf_name`
+* `g:gencconf_conf_name`
 
     Specify clang config file name, ex: `compile_flags.txt`, `.ccls`, `.clang_complete`, `.ycm_extra_conf.py`.</br>
     default value: 
     ```vim
-      let g:gen_clang_conf#conf_name = 'compile_flags.txt'
+      let g:gencconf_conf_name = 'compile_flags.txt'
     ```
 
 
-* `g:gen_clang_conf#ctags_bin`
+* `g:gencconf_ctags_bin`
 
     Set path of ctags bin.</br>
     default value: `ctags`
 
 
-* `g:gen_clang_conf#ctags_opts`
+* `g:gencconf_ctags_opts`
 
     Set ctags options.</br>
     default value: `--languages=c++ --languages=+c`
 
 
-* `g:gen_clang_conf#load_tags`
+* `g:gencconf_load_tags`
 
     Auto load tags in scm_dir.</br>
     default value: `1`
