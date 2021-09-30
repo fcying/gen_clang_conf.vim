@@ -34,7 +34,7 @@ get file list default use `rg`, if not have, use vim script(may be slow). </br>
 
 * `g:gencconf_root_markers`
 
-    Specify the which directoriy is scm dir.</br>
+    Specify the which directoriy is root_marker dir.</br>
     default value:
     ```vim
     let g:gencconf_root_markers = ['.root', '.git', '.svn', '.hg']
@@ -52,7 +52,7 @@ get file list default use `rg`, if not have, use vim script(may be slow). </br>
 
 * `g:gencconf_storein_rootmarker`
 
-    `1`, config will save in scm dir, `0`, save in scm's parent dir.</br>
+    `1`, config will save in root_marker dir, `0`, save in root_marker's parent dir.</br>
     default value: 1
 
 
@@ -103,9 +103,9 @@ get file list default use `rg`, if not have, use vim script(may be slow). </br>
 ## Commands
 * `:GenClangConf`
 
-    Gen `compile_flags.txt` in scm's parent dir, it will add all the directories</br>
+    Gen `compile_flags.txt` in root_marker's parent dir, it will add all the directories</br>
     containing the specified suffix files.</br>
-    if not found scm dir, gen `compile_flags.txt` in current dir.
+    if not found root_marker dir, gen `compile_flags.txt` in current dir.
 
 * `:ClearClangConf`
 
@@ -113,8 +113,8 @@ get file list default use `rg`, if not have, use vim script(may be slow). </br>
 
 * `:GenCtags`
 
-    Gen `prj_tags` in scm's dir.</br>
-    if not found scm dir, gen in current dir.
+    Gen `prj_tags` in root_marker's dir.</br>
+    if not found root_marker dir, gen in current dir.
 
 * `:ClearCtags`
 

@@ -84,11 +84,13 @@ function! s:get_conf_path()
   if g:gencconf_storein_rootmarker ==# 1
     let s:conf_path = s:root_marker . s:delimiter . g:gencconf_conf_name
     let s:ctags_path = s:root_marker . s:delimiter . s:ctags_name
-    let s:cache_path = s:root_marker . '/.cache/clangd'
+    let s:clangd_cache_path = s:root_marker . '/.cache/clangd'
+    let s:ccls_cache_path = s:root_marker . '/.ccls-cache'
   else
     let s:conf_path = s:root_dir . s:delimiter . g:gencconf_conf_name
     let s:ctags_path = s:root_dir . s:delimiter . s:ctags_name
-    let s:cache_path = s:root_dir . '/.cache/clangd'
+    let s:clangd_cache_path = s:root_dir . '/.cache/clangd'
+    let s:ccls_cache_path = s:root_dir . '/.ccls-cache'
   endif
 endfunction
 
@@ -251,7 +253,12 @@ function! gen_clang_conf#clear_clang_conf() abort
   call s:get_conf_path()
   call delete(s:conf_path)
   if g:gencconf_conf_name ==# 'compile_commands.json'
-    call delete(s:cache_path, 'rf')
+    if isdirectory(s:clangd_cache_path)
+      call delete(s:clangd_cache_path, 'rf')
+    endif
+    if isdirectory(s:ccls_cache_path)
+      call delete(s:ccls_cache_path, 'rf')
+    endif
   endif
   echom 'ClearClangConf success'
   redraw
