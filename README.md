@@ -12,23 +12,22 @@ get file list default use `rg`, if not have, use vim script(may be slow). </br>
     `Plug 'fcying/gen_clang_conf.vim'`
 
 ## Options
-* `g:gencconf_ignore_dirs`
+* `g:gencconf_ignore_dir`
 
     Specify the directories you want to exclude while generate config or tags.</br>
     default value:
     ```vim
-    let g:gencconf_ignore_dirs = ['__pycache__', 'out', 'lib', 'build',
+    let g:gencconf_ignore_dir = ['__pycache__', 'out', 'lib', 'build',
         \ 'cache', 'doc', 'docs']
     ```
 
 
-* `g:gencconf_ignore_files`
+* `g:gencconf_ignore_file`
 
     Specify the files you want to exclude while generate config or tags.</br>
     default value:
     ```vim
-    let g:gencconf_ignore_dirs = ['__pycache__', 'out', 'lib', 'build',
-        \ 'cache', 'doc', 'docs']
+    let g:gencconf_ignore_file = []
     ```
 
 
@@ -62,14 +61,14 @@ get file list default use `rg`, if not have, use vim script(may be slow). </br>
     default value: 1
 
 
-* `g:gencconf_default_options`
+* `g:gencconf_default_option`
 
     Default options, add before autogen config.</br>
     only`compile_commands.json` use `cpp` options.
 
     default value:
     ```vim
-    let g:gencconf_default_options = {'c': ['gcc', '-c', '-std=c11'], 'cpp': ['g++', '-c', '-std=c++14']}
+    let g:gencconf_default_option = {'c': ['gcc', '-c', '-std=c11'], 'cpp': ['g++', '-c', '-std=c++14']}
     ```
 
 
@@ -88,13 +87,13 @@ get file list default use `rg`, if not have, use vim script(may be slow). </br>
     default value: `ctags`
 
 
-* `g:gencconf_ctags_opts`
+* `g:gencconf_ctags_option`
 
-    Set ctags options.</br>
+    Set ctags option.</br>
     default value: `--languages=c++ --languages=+c`
 
 
-* `g:gencconf_load_tags`
+* `g:gencconf_autoload_tag`
 
     Auto load tags in root_marker.</br>
     default value: `1`

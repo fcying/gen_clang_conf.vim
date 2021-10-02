@@ -9,11 +9,11 @@ else
     let g:gencconf_loaded = 1
 endif
 
-if !exists('g:gencconf_load_tags')
-  let g:gencconf_load_tags = 1
+if !exists('g:gencconf_autoload_tag')
+  let g:gencconf_autoload_tag = 1
 endif
 
-if g:gencconf_load_tags ==# 1
+if g:gencconf_autoload_tag ==# 1
   call gen_clang_conf#load_tags()
 endif
 

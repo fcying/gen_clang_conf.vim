@@ -1,122 +1,103 @@
-# gen_clang_conf.vim
+*gen_clang_conf.txt*   genarate and manage ctags/ccls/clangd project config.
 
-plugin for [Vim](https://github.com/vim/vim)/[NeoVim](https://github.com/neovim/neovim) to easy use clang config.</br>
+==============================================================================
+CONTENTS                                         *gen_clang_conf-contents*
+Introduction                                     |gen_clang_conf-introduction|
+Options                                          |gen_clang_conf-options|
+Function                                         |gen_clang_conf-function|
 
-It is used for generate simple config file for `clangd`, `ccls`, `ycm`, tested on Windows/Linux. </br>
+==============================================================================
+Introduction                                     *gen_clang_conf-introduction*
+this plugin is used for Vim/NeoVim to easy use ctags/clangd/ccls/ycm config.
+It is used for generate simple config file for ctags/clangd/ccls/ycm.
+get file list default use rg, if not have, use vim script(may be slow).
 
-get file list default use `rg`, if not have, use vim script(may be slow). </br>
+==============================================================================
+Options                                          *gen_clang_conf-options*
 
-## Installation
-* [vim-plug](https://github.com/junegunn/vim-plug)
-
-    `Plug 'fcying/gen_clang_conf.vim'`
-
-## Options
-* `g:gencconf_ignore_dirs`
-
+g:gencconf_ignore_dir                            *g:gencconf_ignore_dir*
     Specify the directories you want to exclude while generate config or tags.</br>
     default value:
     ```vim
-    let g:gencconf_ignore_dirs = ['__pycache__', 'out', 'lib', 'build',
+    let g:gencconf_ignore_dir = ['__pycache__', 'out', 'lib', 'build',
         \ 'cache', 'doc', 'docs']
     ```
 
 
-* `g:gencconf_ignore_files`
+g:gencconf_ignore_file                           *g:gencconf_ignore_file*
+     Specify the files you want to exclude while generate config or tags.</br>
+     default value:
+     ```vim
+     let g:gencconf_ignore_file = []
+     ```
 
-    Specify the files you want to exclude while generate config or tags.</br>
-    default value:
-    ```vim
-    let g:gencconf_ignore_dirs = ['__pycache__', 'out', 'lib', 'build',
-        \ 'cache', 'doc', 'docs']
-    ```
-
-
-* `g:gencconf_root_markers`
-
-    Specify the which directoriy is scm dir.</br>
+g:gencconf_root_markers                          *g:gencconf_root_markers*
+    Specify the which directoriy is root_marker dir.</br>
     default value:
     ```vim
     let g:gencconf_root_markers = ['.root', '.git', '.svn', '.hg']
     ```
 
-
-* `g:gencconf_suffix_list`
-
+g:gencconf_suffix_list                           *g:gencconf_suffix_list*
     Specify the which suffix file will be found.</br>
     default value:
     ```vim
     let g:gencconf_suffix_list = { 'c': ['c'], 'cpp': ['cc', 'cpp'], 'h': ['h', 'hh']}
     ```
 
-
-* `g:gencconf_storein_rootmarker`
-
-    `1`, config will save in scm dir, `0`, save in scm's parent dir.</br>
+g:gencconf_storein_rootmarker                    *g:gencconf_storein_rootmarker*
+    `1`, config will save in root_marker dir, `0`, save in root_marker's parent dir.</br>
     default value: 1
 
-
-* `g:gencconf_relative_path`
-
+g:gencconf_relative_path                         *g:gencconf_relative_path*
     `0`: full path, `1`: relative path.</br>
     default value: 1
 
-
-* `g:gencconf_default_options`
-
+g:gencconf_default_option                        *g:gencconf_default_option*
     Default options, add before autogen config.</br>
     only`compile_commands.json` use `cpp` options.
 
     default value:
     ```vim
-    let g:gencconf_default_options = {'c': ['gcc', '-c', '-std=c11'], 'cpp': ['g++', '-c', '-std=c++14']}
+    let g:gencconf_default_option = {'c': ['gcc', '-c', '-std=c11'], 'cpp': ['g++', '-c', '-std=c++14']}
     ```
 
-
-* `g:gencconf_conf_name`
-
+g:gencconf_conf_name                             *g:gencconf_conf_name*
     Specify clang config file name, ex: `compile_commands.json`, `compile_flags.txt`, `.ccls`, `.ycm_extra_conf.py`.</br>
     default value: 
     ```vim
       let g:gencconf_conf_name = 'compile_commands.json'
     ```
 
-
-* `g:gencconf_ctags_bin`
-
+g:gencconf_ctags_bin                             *g:gencconf_ctags_bin*
     Set path of ctags bin.</br>
     default value: `ctags`
 
-
-* `g:gencconf_ctags_opts`
-
-    Set ctags options.</br>
+g:gencconf_ctags_option                          *g:gencconf_ctags_option*
+    Set ctags option.</br>
     default value: `--languages=c++ --languages=+c`
 
-
-* `g:gencconf_load_tags`
-
+g:gencconf_autoload_tag                          *g:gencconf_autoload_tag*
     Auto load tags in root_marker.</br>
     default value: `1`
 
+==============================================================================
+Function                                         *gen_clang_conf-function*
 
-## Commands
-* `:GenClangConf`
-
-    Gen `compile_flags.txt` in scm's parent dir, it will add all the directories</br>
+GenClangConf                                     *GenClangConf*
+    Gen `compile_flags.txt` in root_marker's parent dir, it will add all the directories</br>
     containing the specified suffix files.</br>
-    if not found scm dir, gen `compile_flags.txt` in current dir.
+    if not found root_marker dir, gen `compile_flags.txt` in current dir.
 
-* `:ClearClangConf`
-
+ClearClangConf                                   *ClearClangConf*
     Remove the generated file.
 
-* `:GenCtags`
+GenCtags                                         *GenCtags*
+    Gen `prj_tags` in root_marker's dir.</br>
+    if not found root_marker dir, gen in current dir.
 
-    Gen `prj_tags` in scm's dir.</br>
-    if not found scm dir, gen in current dir.
-
-* `:ClearCtags`
-
+ClearCtags                                       *ClearCtags*
     Remove the generated tags.
 
+==============================================================================
+vim:tw=78:ts=4:ft=help:norl

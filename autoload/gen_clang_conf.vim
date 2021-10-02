@@ -3,13 +3,13 @@
 " Author: fcying
 " ============================================================================
 
-if !exists('g:gencconf_ignore_dirs')
-  let g:gencconf_ignore_dirs = ['__pycache__', 'out', 'lib', 'build', 
+if !exists('g:gencconf_ignore_dir')
+  let g:gencconf_ignore_dir = ['__pycache__', 'out', 'lib', 'build',
         \ 'cache', 'doc', 'docs']
 endif
 
-if !exists('g:gencconf_ignore_files')
-  let g:gencconf_ignore_files = []
+if !exists('g:gencconf_ignore_file')
+  let g:gencconf_ignore_file = []
 endif
 
 if !exists('g:gencconf_root_markers')
@@ -28,16 +28,16 @@ if !exists('g:gencconf_storein_rootmarker')
   let g:gencconf_storein_rootmarker = 1
 endif
 
-if !exists('g:gencconf_default_options')
-  let g:gencconf_default_options = {'c': ['gcc', '-c', '-std=c11'], 'cpp': ['g++', '-c', '-std=c++14']}
+if !exists('g:gencconf_default_option')
+  let g:gencconf_default_option = {'c': ['gcc', '-c', '-std=c11'], 'cpp': ['g++', '-c', '-std=c++14']}
 endif
 
 if !exists('g:gencconf_ctags_bin')
   let g:gencconf_ctags_bin = 'ctags'
 endif
 
-if !exists('g:gencconf_ctags_opts')
-  let g:gencconf_ctags_opts = '--languages=c++ --languages=+c'
+if !exists('g:gencconf_ctags_option')
+  let g:gencconf_ctags_option = '--languages=c++ --languages=+c'
 endif
 
 if !exists('g:gencconf_relative_path')
@@ -74,7 +74,7 @@ function! s:get_root_dir()
     let s:root_dir = getcwd()
   endif
   if !exists('s:ignore_dirs')
-    let s:ignore_dirs = g:gencconf_ignore_dirs
+    let s:ignore_dirs = g:gencconf_ignore_dir
     call extend(s:ignore_dirs, g:gencconf_root_markers)
   endif
 endfunction
@@ -108,7 +108,7 @@ function! s:vim_get_filelist(root_dir)
       let l:suffix = fnamemodify(str, ':e')
       if index(s:suffix_list_all, l:suffix) != -1
         " check ignore files
-        if index(g:gencconf_ignore_files, fnamemodify(str, ':t')) != -1
+        if index(g:gencconf_ignore_file, fnamemodify(str, ':t')) != -1
           continue
         endif
         call add(s:file_list, l:full_path)
@@ -136,7 +136,7 @@ function! s:get_file_list()
         let l:cmd = l:cmd . "-g='*." . str . "' "
       endif
     endfor
-    for str in g:gencconf_ignore_files
+    for str in g:gencconf_ignore_file
       if s:is_win
         let l:cmd = l:cmd . '-g="!' . str . '" '
       else
@@ -175,11 +175,11 @@ function! gen_clang_conf#gen_clang_conf() abort
   if g:gencconf_conf_name ==# 'compile_commands.json'
       "get default options
       let l:default_c_options = []
-      for str in g:gencconf_default_options.c
+      for str in g:gencconf_default_option.c
         call add(l:default_c_options, '      "' . str . '",')
       endfor
       let l:default_cpp_options = []
-      for str in g:gencconf_default_options.cpp
+      for str in g:gencconf_default_option.cpp
         call add(l:default_cpp_options, '      "' . str . '",')
       endfor
 
@@ -217,7 +217,7 @@ function! gen_clang_conf#gen_clang_conf() abort
       call add(l:conf_list, ']')
   else
     "default options
-    call extend(l:conf_list, g:gencconf_default_options.c)
+    call extend(l:conf_list, g:gencconf_default_option.c)
 
     "gen config
     call s:get_dir_list()
@@ -270,7 +270,7 @@ function! gen_clang_conf#gen_ctags() abort
   for str in s:ignore_dirs
     let l:cmd = l:cmd . '--exclude="' . str . '" '
   endfor
-  for str in g:gencconf_ignore_files
+  for str in g:gencconf_ignore_file
     let l:cmd = l:cmd . '--exclude="' . str . '" '
   endfor
   "echom l:cmd
@@ -278,7 +278,7 @@ function! gen_clang_conf#gen_ctags() abort
   if executable(g:gencconf_ctags_bin)
     call gen_clang_conf#job#start(g:gencconf_ctags_bin .
           \ ' -R -f ' . s:ctags_path .
-          \ ' ' . g:gencconf_ctags_opts .
+          \ ' ' . g:gencconf_ctags_option .
           \ ' ' . l:cmd . ' ' . s:root_dir,
           \ function('s:gen_ctags_end'))
     if filereadable(expand(s:ctags_path)) != 0
