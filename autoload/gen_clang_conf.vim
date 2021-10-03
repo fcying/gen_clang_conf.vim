@@ -73,10 +73,8 @@ function! s:get_root_dir()
     let s:root_marker = getcwd()
     let s:root_dir = getcwd()
   endif
-  if !exists('s:ignore_dirs')
-    let s:ignore_dirs = g:gencconf_ignore_dir
-    call extend(s:ignore_dirs, g:gencconf_root_markers)
-  endif
+
+  let s:ignore_dirs = g:gencconf_ignore_dir + g:gencconf_root_markers
 endfunction
 
 function! s:get_conf_path()
@@ -94,10 +92,19 @@ function! s:get_conf_path()
   endif
 endfunction
 
+function! s:fnmatch(list, str)
+  for var in list
+    if var =~ glob2regpat(str)
+      return 0
+    endif
+  endfor
+  return -1
+endfunction
+
 function! s:vim_get_filelist(root_dir)
   "check ignore dirs
   let l:path_list = split(a:root_dir, s:delimiter)
-  if index(s:ignore_dirs, l:path_list[-1]) != -1
+  if fnmatch(s:ignore_dirs, l:path_list[-1]) != -1
     return
   endif
 
@@ -108,7 +115,7 @@ function! s:vim_get_filelist(root_dir)
       let l:suffix = fnamemodify(str, ':e')
       if index(s:suffix_list_all, l:suffix) != -1
         " check ignore files
-        if index(g:gencconf_ignore_file, fnamemodify(str, ':t')) != -1
+        if fnmatch(g:gencconf_ignore_file, fnamemodify(str, ':t')) != -1
           continue
         endif
         call add(s:file_list, l:full_path)
