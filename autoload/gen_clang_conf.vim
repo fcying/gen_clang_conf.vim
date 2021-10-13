@@ -157,6 +157,7 @@ function! s:get_file_list()
     let s:file_list = []
     call s:vim_get_filelist(s:root_dir)
   endif
+  call sort(s:file_list)
   "echom s:file_list
 endfunction
 
