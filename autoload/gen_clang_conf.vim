@@ -93,8 +93,8 @@ function! s:get_conf_path()
 endfunction
 
 function! s:fnmatch(list, str)
-  for var in list
-    if var =~ glob2regpat(str)
+  for var in a:list
+    if var =~ glob2regpat(a:str)
       return 0
     endif
   endfor
@@ -104,7 +104,7 @@ endfunction
 function! s:vim_get_filelist(root_dir)
   "check ignore dirs
   let l:path_list = split(a:root_dir, s:delimiter)
-  if fnmatch(s:ignore_dirs, l:path_list[-1]) != -1
+  if s:fnmatch(s:ignore_dirs, l:path_list[-1]) != -1
     return
   endif
 
@@ -115,7 +115,7 @@ function! s:vim_get_filelist(root_dir)
       let l:suffix = fnamemodify(str, ':e')
       if index(s:suffix_list_all, l:suffix) != -1
         " check ignore files
-        if fnmatch(g:gencconf_ignore_file, fnamemodify(str, ':t')) != -1
+        if s:fnmatch(g:gencconf_ignore_file, fnamemodify(str, ':t')) != -1
           continue
         endif
         call add(s:file_list, l:full_path)
