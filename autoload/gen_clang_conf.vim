@@ -274,20 +274,22 @@ endfunction
 
 function! gen_clang_conf#gen_ctags() abort
   call s:get_conf_path()
-  let l:cmd = ''
+  let l:cmd = []
   for str in s:ignore_dirs
-    let l:cmd = l:cmd . '--exclude="' . str . '" '
+    call add(l:cmd, '--exclude="' . str . '"')
   endfor
   for str in g:gencconf_ignore_file
-    let l:cmd = l:cmd . '--exclude="' . str . '" '
+    call add(l:cmd, '--exclude="' . str . '"')
   endfor
-  "echom l:cmd
+  call sort(l:cmd)
+  call uniq(l:cmd)
+  "echom join(l:cmd)
 
   if executable(g:gencconf_ctags_bin)
     call gen_clang_conf#job#start(g:gencconf_ctags_bin .
           \ ' -R -f ' . s:ctags_path .
           \ ' ' . g:gencconf_ctags_option .
-          \ ' ' . l:cmd . ' ' . s:root_dir,
+          \ ' ' . join(l:cmd) . ' ' . s:root_dir,
           \ function('s:gen_ctags_end'))
     if filereadable(expand(s:ctags_path)) != 0
       exec 'set tags^=' . s:ctags_path
