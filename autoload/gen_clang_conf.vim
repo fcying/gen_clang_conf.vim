@@ -222,6 +222,7 @@ function! gen_clang_conf#gen_clang_conf() abort
         call add(l:conf_list, '    "file": "' . file . '"')
         call add(l:conf_list, '  },')
       endfor
+      let l:conf_list[-1] = '  }'
       call add(l:conf_list, ']')
   else
     "default options
