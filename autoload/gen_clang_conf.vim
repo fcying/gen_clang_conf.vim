@@ -284,14 +284,16 @@ function! gen_clang_conf#gen_ctags() abort
   endfor
   call sort(l:cmd)
   call uniq(l:cmd)
-  "echom join(l:cmd)
 
-  if executable(g:gencconf_ctags_bin)
-    call gen_clang_conf#job#start(g:gencconf_ctags_bin .
+  let l:cmd = g:gencconf_ctags_bin .
           \ ' -R -f ' . s:ctags_path .
           \ ' ' . g:gencconf_ctags_option .
-          \ ' ' . join(l:cmd) . ' ' . s:root_dir,
-          \ function('s:gen_ctags_end'))
+          \ ' ' . join(l:cmd) . ' ' . s:root_dir
+
+  "echom l:cmd
+
+  if executable(g:gencconf_ctags_bin)
+    call gen_clang_conf#job#start(l:cmd, function('s:gen_ctags_end'))
     if filereadable(expand(s:ctags_path)) != 0
       exec 'set tags^=' . s:ctags_path
     endif
