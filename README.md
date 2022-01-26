@@ -68,7 +68,11 @@ get file list default use `rg`, if not have, use vim script(may be slow). </br>
 
     default value:
     ```vim
-    let g:gencconf_default_option = {'c': ['gcc', '-c', '-std=c11'], 'cpp': ['g++', '-c', '-std=c++14']}
+    let g:gencconf_default_option = {
+        \ 'c': ['gcc', '-c', '-std=c11'],
+        \ 'cpp': ['g++', '-c', '-std=c++14'],
+        \ '*': ['-ferror-limit=0']
+        \ }
     ```
 
 

@@ -29,7 +29,11 @@ if !exists('g:gencconf_storein_rootmarker')
 endif
 
 if !exists('g:gencconf_default_option')
-  let g:gencconf_default_option = {'c': ['gcc', '-c', '-std=c11'], 'cpp': ['g++', '-c', '-std=c++14']}
+  let g:gencconf_default_option = {
+        \ 'c': ['gcc', '-c', '-std=c11'],
+        \ 'cpp': ['g++', '-c', '-std=c++14'],
+        \ '*': ['-ferror-limit=0']
+        \ }
 endif
 
 if !exists('g:gencconf_ctags_bin')
@@ -190,6 +194,10 @@ function! gen_clang_conf#gen_clang_conf() abort
       for str in g:gencconf_default_option.cpp
         call add(l:default_cpp_options, '      "' . str . '",')
       endfor
+      let l:default_options = []
+      for str in g:gencconf_default_option['*']
+        call add(l:default_options, '      "' . str . '",')
+      endfor
 
       "get include dirs
       call s:get_dir_list()
@@ -215,6 +223,7 @@ function! gen_clang_conf#gen_clang_conf() abort
         else
           call extend(l:conf_list, l:default_cpp_options)
         endif
+        call extend(l:conf_list, l:default_options)
         call extend(l:conf_list, l:include_dirs)
         call add(l:conf_list, '      "' . file . '"')
         call add(l:conf_list, '    ],')
@@ -227,6 +236,7 @@ function! gen_clang_conf#gen_clang_conf() abort
   else
     "default options
     call extend(l:conf_list, g:gencconf_default_option.c)
+    call extend(l:conf_list, g:gencconf_default_option['*'])
 
     "gen config
     call s:get_dir_list()
