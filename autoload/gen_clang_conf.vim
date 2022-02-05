@@ -34,6 +34,16 @@ if !exists('g:gencconf_default_option')
         \ 'cpp': ['g++', '-c', '-std=c++14'],
         \ '*': ['-ferror-limit=0']
         \ }
+else
+  if !exists('g:gencconf_default_option.c')
+    let g:gencconf_default_option.c = ['gcc', '-c', '-std=c11']
+  endif
+  if !exists('g:gencconf_default_option.cpp')
+    let g:gencconf_default_option.cpp = ['g++', '-c', '-std=c++14']
+  endif
+  if !exists("g:gencconf_default_option['*']")
+    let g:gencconf_default_option['*'] = ['-ferror-limit=0']
+  endif
 endif
 
 if !exists('g:gencconf_ctags_bin')
