@@ -34,16 +34,6 @@ if !exists('g:gencconf_default_option')
         \ 'cpp': ['g++', '-c', '-std=c++14'],
         \ '*': ['-ferror-limit=0']
         \ }
-else
-  if !exists('g:gencconf_default_option.c')
-    let g:gencconf_default_option.c = ['gcc', '-c', '-std=c11']
-  endif
-  if !exists('g:gencconf_default_option.cpp')
-    let g:gencconf_default_option.cpp = ['g++', '-c', '-std=c++14']
-  endif
-  if !exists("g:gencconf_default_option['*']")
-    let g:gencconf_default_option['*'] = ['-ferror-limit=0']
-  endif
 endif
 
 if !exists('g:gencconf_ctags_bin')
@@ -193,6 +183,16 @@ function! gen_clang_conf#gen_clang_conf() abort
   call s:get_conf_path()
 
   let l:conf_list = []
+
+  if !exists('g:gencconf_default_option.c')
+    let g:gencconf_default_option.c = ['gcc', '-c', '-std=c11']
+  endif
+  if !exists('g:gencconf_default_option.cpp')
+    let g:gencconf_default_option.cpp = ['g++', '-c', '-std=c++14']
+  endif
+  if !exists("g:gencconf_default_option['*']")
+    let g:gencconf_default_option['*'] = ['-ferror-limit=0']
+  endif
 
   if g:gencconf_conf_name ==# 'compile_commands.json'
       "get default options
