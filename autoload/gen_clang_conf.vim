@@ -305,9 +305,9 @@ function! gen_clang_conf#gen_ctags() abort
   call sort(l:cmd)
   call uniq(l:cmd)
 
-  let l:cmd = g:gencconf_ctags_bin .
-          \ ' -R -f ' . s:ctags_path .
-          \ ' ' . g:gencconf_ctags_option .
+  let l:cmd = '"' . g:gencconf_ctags_bin .
+          \ '" -R -f "' . s:ctags_path .
+          \ '" ' . g:gencconf_ctags_option .
           \ ' ' . join(l:cmd) . ' ' . s:root_dir
 
   "echom l:cmd
@@ -315,7 +315,7 @@ function! gen_clang_conf#gen_ctags() abort
   if executable(g:gencconf_ctags_bin)
     call gen_clang_conf#job#start(l:cmd, function('s:gen_ctags_end'))
     if filereadable(expand(s:ctags_path)) != 0
-      exec 'set tags^=' . s:ctags_path
+      exec 'set tags^=' . fnameescape(s:ctags_path)
     endif
   else
     echom "need install ctags"
@@ -330,7 +330,7 @@ endfunction
 
 function! gen_clang_conf#load_tags() abort
   call s:get_conf_path()
-  exec 'set tags^=' . s:ctags_path
+  exec 'set tags^=' . fnameescape(s:ctags_path)
 endfunction
 
 function! gen_clang_conf#clear_ctags() abort
