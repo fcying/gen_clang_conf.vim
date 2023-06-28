@@ -48,10 +48,14 @@ if !exists('g:gencconf_relative_path')
   let g:gencconf_relative_path = 1
 endif
 
+if !exists('g:gencconf_tag_relative')
+  let g:gencconf_tag_relative = 1
+endif
+
 let s:root_marker = ''
 let s:root_dir = ''
 let s:is_win = has('win32')
-let s:ctags_name = 'prj_tags'
+let s:ctags_name = 'tags'
 
 let s:file_list = []
 let s:dir_list = []
@@ -308,21 +312,29 @@ function! gen_clang_conf#gen_ctags() abort
   let l:cmd = '"' . g:gencconf_ctags_bin .
           \ '" -R -f "' . s:ctags_path .
           \ '" ' . g:gencconf_ctags_option .
-          \ ' ' . join(l:cmd) . ' ' . s:root_dir
+          \ ' ' . join(l:cmd)
+
+  if g:gencconf_tag_relative ==# 1
+    let s:old_pwd = getcwd()
+    exec 'cd ' . s:root_dir
+    let l:cmd = l:cmd . ' --tag-relative .'
+  else
+    let l:cmd = l:cmd . ' ' . s:root_dir
+  endif
 
   "echom l:cmd
 
   if executable(g:gencconf_ctags_bin)
     call gen_clang_conf#job#start(l:cmd, function('s:gen_ctags_end'))
-    if filereadable(expand(s:ctags_path)) != 0
-      exec 'set tags^=' . fnameescape(s:ctags_path)
-    endif
   else
     echom "need install ctags"
   endif
 endfunction
 
 function! s:gen_ctags_end(...) abort
+  if g:gencconf_tag_relative ==# 1
+    exec 'cd ' . s:old_pwd
+  endif
   call gen_clang_conf#load_tags()
   echom "GenCtags success"
   redraw
@@ -330,7 +342,9 @@ endfunction
 
 function! gen_clang_conf#load_tags() abort
   call s:get_conf_path()
-  exec 'set tags^=' . fnameescape(s:ctags_path)
+  if filereadable(expand(s:ctags_path)) != 0
+    exec 'set tags^=' . fnameescape(s:ctags_path)
+  endif
 endfunction
 
 function! gen_clang_conf#clear_ctags() abort

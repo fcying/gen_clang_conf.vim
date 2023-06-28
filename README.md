@@ -60,6 +60,10 @@ get file list default use `rg`, if not have, use vim script(may be slow). </br>
     `0`: full path, `1`: relative path.</br>
     default value: 1
 
+* `g:gencconf_tag_relative`
+
+    `0`: full path, `1`: ctags set --tag-relative</br>
+    default value: 1
 
 * `g:gencconf_default_option`
 

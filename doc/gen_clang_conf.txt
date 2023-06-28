@@ -53,6 +53,10 @@ g:gencconf_relative_path                         *g:gencconf_relative_path*
     `0`: full path, `1`: relative path.</br>
     default value: 1
 
+g:gencconf_tag_relative                         *g:gencconf_tag_relative*
+    `0`: full path, `1`: ctags set --tag-relative</br>
+    default value: 1
+
 g:gencconf_default_option                        *g:gencconf_default_option*
     Default options, add before autogen config.</br>
     only`compile_commands.json` use `cpp` options.
