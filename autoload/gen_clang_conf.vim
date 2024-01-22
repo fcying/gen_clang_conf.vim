@@ -41,7 +41,7 @@ if !exists('g:gencconf_ctags_bin')
 endif
 
 if !exists('g:gencconf_ctags_option')
-  let g:gencconf_ctags_option = '--languages=c++ --languages=+c'
+  let g:gencconf_ctags_option = ''
 endif
 
 if !exists('g:gencconf_relative_path')
@@ -297,7 +297,7 @@ function! gen_clang_conf#clear_clang_conf() abort
   redraw
 endfunction
 
-function! gen_clang_conf#gen_ctags() abort
+function! gen_clang_conf#gen_ctags(...) abort
   call s:get_conf_path()
   let l:cmd = []
   for str in s:ignore_dirs
@@ -309,9 +309,15 @@ function! gen_clang_conf#gen_ctags() abort
   call sort(l:cmd)
   call uniq(l:cmd)
 
+  let l:languages = ''
+  if a:0 ==# 1
+    let l:languages = '--languages=' . a:1
+  endif
+
   let l:cmd = '"' . g:gencconf_ctags_bin .
           \ '" -R -f "' . s:ctags_path .
           \ '" ' . g:gencconf_ctags_option .
+          \ ' ' . l:languages .
           \ ' ' . join(l:cmd)
 
   if g:gencconf_tag_relative ==# 1

@@ -19,6 +19,6 @@ endif
 
 command! -nargs=0 GenClangConf call gen_clang_conf#gen_clang_conf()
 command! -nargs=0 ClearClangConf call gen_clang_conf#clear_clang_conf()
-command! -nargs=0 GenCtags call gen_clang_conf#gen_ctags()
+command! -nargs=? GenCtags call gen_clang_conf#gen_ctags(<f-args>)
 command! -nargs=0 ClearCtags call gen_clang_conf#clear_ctags()
 

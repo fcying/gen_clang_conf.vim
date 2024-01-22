@@ -98,7 +98,7 @@ get file list default use `rg`, if not have, use vim script(may be slow). </br>
 * `g:gencconf_ctags_option`
 
     Set ctags option.</br>
-    default value: `--languages=c++ --languages=+c`
+    default value: ``
 
 
 * `g:gencconf_autoload_tag`
@@ -118,10 +118,11 @@ get file list default use `rg`, if not have, use vim script(may be slow). </br>
 
     Remove the generated file.
 
-* `:GenCtags`
+* `:GenCtags languages`
 
     Gen `prj_tags` in root_marker's dir.</br>
-    if not found root_marker dir, gen in current dir.
+    if not found root_marker dir, gen in current dir.</br>
+    parameter is used to set the `languages` option, if not provided, it remains unset.</br>
 
 * `:ClearCtags`
 
