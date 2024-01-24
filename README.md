@@ -120,9 +120,12 @@ get file list default use `rg`, if not have, use vim script(may be slow). </br>
 
 * `:GenCtags languages`
 
-    Gen `prj_tags` in root_marker's dir.</br>
+    Gen `tags` in root_marker's dir.</br>
     if not found root_marker dir, gen in current dir.</br>
-    parameter is used to set the `languages` option, if not provided, it remains unset.</br>
+    parameter is used to set the `languages` option, if not provided, not set `languages`.</br>
+    If the tags file exists, only incremental updates to the current file,</br>
+    else the whole project will be updated, or you can use the `-bang` option force update whole project</br>
+    `:GenCtags! languages`
 
 * `:ClearCtags`
 

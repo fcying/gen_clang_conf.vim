@@ -54,7 +54,7 @@ endif
 
 let s:root_marker = ''
 let s:root_dir = ''
-let s:is_win = has('win32')
+let s:is_win = has('win32') || has('win64')
 let s:ctags_name = 'tags'
 
 let s:file_list = []
@@ -183,6 +183,34 @@ function! s:get_dir_list()
   "echom s:dir_list
 endfunction
 
+" fork from https://github.com/skywind3000/vim/blob/master/autoload/asclib/path.vim
+function! s:get_relative_path(path, base)
+  let path = a:path
+  let base = a:base
+  let head = ""
+
+  while 1
+    " check if base directory contains child
+    if stridx(path, base) == 0
+      if base =~ '[\/\\]$'
+        let size = strlen(base)
+      else
+        let size = strlen(base) + 1
+      endif
+      return head . strpart(path, size)
+    endif
+
+    let head = head . ".." . s:delimiter
+    let prev = base
+    let base = fnamemodify(base, ":h")
+    if base == prev
+      break
+    endif
+  endwhile
+
+  return a:path
+endfunction
+
 function! gen_clang_conf#gen_clang_conf() abort
   call s:get_conf_path()
 
@@ -297,7 +325,7 @@ function! gen_clang_conf#clear_clang_conf() abort
   redraw
 endfunction
 
-function! gen_clang_conf#gen_ctags(...) abort
+function! gen_clang_conf#gen_ctags(bang, ...) abort
   call s:get_conf_path()
   let l:cmd = []
   for str in s:ignore_dirs
@@ -309,23 +337,67 @@ function! gen_clang_conf#gen_ctags(...) abort
   call sort(l:cmd)
   call uniq(l:cmd)
 
+  let l:file = expand('%:p')
+  if a:bang ==# 1 || filereadable(s:ctags_path) ==# 0 || l:file == ""
+    let l:gen_whole_project = 1
+  else
+    let l:gen_whole_project = 0
+  endif
+
   let l:languages = ''
   if a:0 ==# 1
     let l:languages = '--languages=' . a:1
   endif
 
-  let l:cmd = '"' . g:gencconf_ctags_bin .
+  if l:gen_whole_project ==# 0
+    let l:cmd = '"' . g:gencconf_ctags_bin .
+          \ '" -a -f "' . s:ctags_path .
+          \ '" ' . g:gencconf_ctags_option .
+          \ ' ' . l:languages .
+          \ ' ' . join(l:cmd)
+  else
+    let l:cmd = '"' . g:gencconf_ctags_bin .
           \ '" -R -f "' . s:ctags_path .
           \ '" ' . g:gencconf_ctags_option .
           \ ' ' . l:languages .
           \ ' ' . join(l:cmd)
+  endif
 
   if g:gencconf_tag_relative ==# 1
-    let s:old_pwd = getcwd()
-    exec 'cd ' . s:root_dir
-    let l:cmd = l:cmd . ' --tag-relative .'
+    let l:cmd = l:cmd . ' --tag-relative=yes'
+  endif
+
+  " change work dir
+  let old_pwd = getcwd()
+  exec 'lcd ' . s:root_dir
+
+  if l:gen_whole_project ==# 0
+    if g:gencconf_tag_relative ==# 1
+      let l:update_file = s:get_relative_path(l:file, s:root_marker)
+      let l:file = fnamemodify(l:file, ":.")
+    else
+      let l:update_file = l:file
+    endif
+
+    " remove file references in tags
+    if s:is_win ==# 0
+      let tags_update = 'grep --text -Fv "	' . l:update_file . '	" ' . s:ctags_path . ' > ' . s:ctags_path . '2'
+      "echom tags_update
+      call system(tags_update)
+      call system("mv " . s:ctags_path . "2 " . s:ctags_path)
+    else
+      let tags_update = 'findstr /V /C:"	' . l:update_file . '	" ' . s:ctags_path . ' > ' . s:ctags_path . '2'
+      call system(tags_update)
+      call system("move /Y " . s:ctags_path . "2 " . s:ctags_path)
+    endif
+
+    let l:cmd = l:cmd . ' ' . l:file
   else
-    let l:cmd = l:cmd . ' ' . s:root_dir
+    if g:gencconf_tag_relative ==# 1
+      let l:cmd = l:cmd . ' .'
+    else
+      let l:cmd = l:cmd . ' ' . s:root_dir
+    endif
   endif
 
   "echom l:cmd
@@ -335,12 +407,12 @@ function! gen_clang_conf#gen_ctags(...) abort
   else
     echom "need install ctags"
   endif
+
+  " restore work dir
+  exec 'lcd ' . old_pwd
 endfunction
 
 function! s:gen_ctags_end(...) abort
-  if g:gencconf_tag_relative ==# 1
-    exec 'cd ' . s:old_pwd
-  endif
   call gen_clang_conf#load_tags()
   echom "GenCtags success"
   redraw
