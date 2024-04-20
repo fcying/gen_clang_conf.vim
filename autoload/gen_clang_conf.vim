@@ -169,6 +169,10 @@ function! s:get_file_list()
   "echom s:file_list
 endfunction
 
+function! s:use_forward_slashes(path)
+  return substitute(a:path, '\\', '/', 'g')
+endfunction
+
 function! s:get_dir_list()
   let s:dir_list = []
   call s:get_file_list()
@@ -176,7 +180,7 @@ function! s:get_dir_list()
     if g:gencconf_relative_path ==# 1
       let s:file_list[i] = substitute(s:file_list[i], s:root_dir . s:delimiter , '', '')
     endif
-    call add(s:dir_list, '-I' . substitute(fnamemodify(s:file_list[i], ':h'), '\\', '/', 'g'))
+    call add(s:dir_list, '-I' . s:use_forward_slashes(fnamemodify(s:file_list[i], ':h')))
   endfor
   call sort(s:dir_list)
   call uniq(s:dir_list)
@@ -267,10 +271,10 @@ function! gen_clang_conf#gen_clang_conf() abort
         endif
         call extend(l:conf_list, l:default_options)
         call extend(l:conf_list, l:include_dirs)
-        call add(l:conf_list, '      "' . file . '"')
+        call add(l:conf_list, '      "' . s:use_forward_slashes(file) . '"')
         call add(l:conf_list, '    ],')
-        call add(l:conf_list, '    "directory": "' . s:root_dir . '",')
-        call add(l:conf_list, '    "file": "' . file . '"')
+        call add(l:conf_list, '    "directory": "' . s:use_forward_slashes(s:root_dir) . '",')
+        call add(l:conf_list, '    "file": "' . s:use_forward_slashes(file) . '"')
         call add(l:conf_list, '  },')
       endfor
       let l:conf_list[-1] = '  }'
