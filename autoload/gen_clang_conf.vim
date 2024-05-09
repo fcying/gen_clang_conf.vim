@@ -61,11 +61,11 @@ let s:file_list = []
 let s:dir_list = []
 let s:suffix_list_all = g:gencconf_suffix_list.c + g:gencconf_suffix_list.cpp + g:gencconf_suffix_list.h
 
-if s:is_win
-  let s:delimiter = '\'
-else
+"if s:is_win
+"  let s:delimiter = '\'
+"else
   let s:delimiter = '/'
-endif
+"endif
 
 function! s:get_root_dir()
   for l:item in g:gencconf_root_markers
@@ -80,6 +80,11 @@ function! s:get_root_dir()
   else
     let s:root_marker = getcwd()
     let s:root_dir = getcwd()
+  endif
+
+  if s:is_win
+    let s:root_marker = s:use_forward_slashes(s:root_marker)
+    let s:root_dir = s:use_forward_slashes(s:root_dir)
   endif
 
   let s:ignore_dirs = g:gencconf_ignore_dir + g:gencconf_root_markers
@@ -177,10 +182,11 @@ function! s:get_dir_list()
   let s:dir_list = []
   call s:get_file_list()
   for i in range(len(s:file_list))
+    let s:file_list[i] = s:use_forward_slashes(s:file_list[i])
     if g:gencconf_relative_path ==# 1
       let s:file_list[i] = substitute(s:file_list[i], s:root_dir . s:delimiter , '', '')
     endif
-    call add(s:dir_list, '-I' . s:use_forward_slashes(fnamemodify(s:file_list[i], ':h')))
+    call add(s:dir_list, '-I' . fnamemodify(s:file_list[i], ':h'))
   endfor
   call sort(s:dir_list)
   call uniq(s:dir_list)
@@ -271,10 +277,10 @@ function! gen_clang_conf#gen_clang_conf() abort
         endif
         call extend(l:conf_list, l:default_options)
         call extend(l:conf_list, l:include_dirs)
-        call add(l:conf_list, '      "' . s:use_forward_slashes(file) . '"')
+        call add(l:conf_list, '      "' . file . '"')
         call add(l:conf_list, '    ],')
-        call add(l:conf_list, '    "directory": "' . s:use_forward_slashes(s:root_dir) . '",')
-        call add(l:conf_list, '    "file": "' . s:use_forward_slashes(file) . '"')
+        call add(l:conf_list, '    "directory": "' . s:root_dir . '",')
+        call add(l:conf_list, '    "file": "' . file . '"')
         call add(l:conf_list, '  },')
       endfor
       let l:conf_list[-1] = '  }'
