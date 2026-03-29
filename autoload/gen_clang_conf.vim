@@ -107,7 +107,7 @@ endfunction
 
 function! s:fnmatch(list, str)
   for var in a:list
-    if var =~ glob2regpat(a:str)
+    if a:str =~ glob2regpat(var)
       return 0
     endif
   endfor
@@ -260,6 +260,7 @@ function! gen_clang_conf#gen_clang_conf() abort
 
       "gen compile_commands.json
       call add(l:conf_list, '[')
+      let l:has_entry = 0
       for file in s:file_list
         let l:suffix = fnamemodify(file, ':e')
 
@@ -282,8 +283,11 @@ function! gen_clang_conf#gen_clang_conf() abort
         call add(l:conf_list, '    "directory": "' . s:root_dir . '",')
         call add(l:conf_list, '    "file": "' . file . '"')
         call add(l:conf_list, '  },')
+        let l:has_entry = 1
       endfor
-      let l:conf_list[-1] = '  }'
+      if l:has_entry
+        let l:conf_list[-1] = '  }'
+      endif
       call add(l:conf_list, ']')
   else
     "default options
